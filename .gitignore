@@ -1,0 +1,6 @@
+# Ignorez tous les logs
+*.log
+*.cbp
+*.layout
+bin/
+obj/
