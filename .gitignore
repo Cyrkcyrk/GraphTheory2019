@@ -1,6 +1,7 @@
 # Ignorez tous les logs
 *.log
 *.cbp
+*.depend
 *.layout
 bin/
 obj/
