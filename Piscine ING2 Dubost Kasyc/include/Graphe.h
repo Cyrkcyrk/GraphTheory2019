@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include "sommet.h"
 #include "arete.h"
+#include "svgfile.h"
 
 class Graphe
 {
@@ -15,9 +16,9 @@ class Graphe
 
         void lireSommet(std::string nomFichierSommet);
         void lireArete(std::string nomFichierArete);
-        void afficherGraphe();
+        void afficherGraphe(Svgfile& svgout);
 
-        Graphe algoPrim(int depart) const;
+        Graphe algoPrim(int depart, int critere) const;
 
     private:
         std::unordered_map<int,Sommet*> m_sommets;

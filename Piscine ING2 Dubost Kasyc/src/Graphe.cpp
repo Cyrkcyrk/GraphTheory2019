@@ -1,4 +1,6 @@
 #include "Graphe.h"
+#include "svgfile.h"
+#include "conf.h"
 #include <iostream>
 #include <fstream>
 
@@ -25,17 +27,29 @@ Graphe::~Graphe()
     //dtor
 }
 
-void Graphe::afficherGraphe()
+void Graphe::afficherGraphe(Svgfile& svgout)
 {
-    for(auto s : m_sommets)
-    {
-        std::cout << s.second->getId() << " ";
-    }
-    std::cout<<std::endl;
     for(auto a : m_aretes)
     {
-        std::cout << a.second->getId() << " | " << a.second->getS1()->getId() << " <--" << a.second->getPoids()[0] << " " << a.second->getPoids()[1] << "-- "<< a.second->getS2()->getId() << std::endl;
+        //std::cout << a.second->getId() << " ";
+
+        std::vector<Coord> tmp = a.second->getCoord();
+        svgout.addLine(tmp[0].getX(), tmp[0].getY(), tmp[1].getX(), tmp[1].getY(), TRAIT_EPAISSEUR, TRAIT_COULEUR);
+
     }
+    std::cout<<std::endl;
+    for(auto s : m_sommets)
+    {
+
+        std::cout << s.second->getId() << " ";
+
+        Coord tmp = s.second->getCoord();
+
+        svgout.addCircle(tmp.getX(), tmp.getY(), POINT_RAYON, POINT_COULEUR);
+        svgout.addText(tmp.getX(), tmp.getY()+POINT_RAYON/2, std::to_string(s.second->getId()), POINT_TEXT);
+    }
+
+
 }
 
 void Graphe::lireSommet(std::string nomFichier)
@@ -113,7 +127,7 @@ void Graphe::lireArete(std::string nomFichier)
 }
 
 
-Graphe Graphe::algoPrim(int depart) const
+Graphe Graphe::algoPrim(int depart, int critere) const
 {
     std::vector<Sommet*> chemin;
     std::vector<Arete*> aretes;
@@ -192,7 +206,7 @@ Graphe Graphe::algoPrim(int depart) const
         std::cout << chemin[i]->getId() << " ";
         if (i<chemin.size()-1)
         {
-            std::cout << "<--" << aretes[i]->getPoids()[0] << "-- ";
+            std::cout << "<--" << aretes[i]->getPoids()[critere] << "-- ";
         }
     }
 

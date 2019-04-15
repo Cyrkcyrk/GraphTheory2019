@@ -7,10 +7,18 @@
 
 int main()
 {
-    Graphe g("graphes/broadway.txt","graphes/broadway_weights_0.txt");
 
-    g.afficherGraphe();
-    g.algoPrim(1);
+    Svgfile svgout;
+    svgout.addGrid(100, true, "rgb(200, 200, 200)");
+    Graphe g("graphes/cubetown.txt","graphes/cubetown_weights_0.txt");
+
+    int depart = 1;
+    int critere = 0;
+
+    g.algoPrim(depart,critere).afficherGraphe(svgout);
+
+    int critere = 1;
+    g.algoPrim(depart,critere).afficherGraphe(svgout);
 
     return 0;
 }

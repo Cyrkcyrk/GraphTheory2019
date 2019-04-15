@@ -2,6 +2,7 @@
 #define ARETE_H
 
 #include <vector>
+#include "Coord.h"
 
 class Sommet;
 
@@ -18,6 +19,7 @@ class Arete
         Sommet* getS2()const{return m_sommet2;};
         const std::vector<double> getPoids()const{return m_poids;};
         Sommet* getAutreSommet(Sommet* s){if (m_sommet1 != s) return m_sommet1; else return m_sommet2;};
+        std::vector<Coord> getCoord() const;
 
     private:
         int m_id;

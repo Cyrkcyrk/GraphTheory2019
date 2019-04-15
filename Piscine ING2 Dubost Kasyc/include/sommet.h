@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "arete.h"
+#include "Coord.h"
 
 class Sommet
 {
@@ -14,19 +15,21 @@ class Sommet
         void ajouterArete(Arete* a);
 
         int getId()const{return m_id;};
+
         void ajouter(){m_ajoute = true;};
         void retirer(){m_ajoute = false;};
         bool isAjoute()const{return m_ajoute;};
 
+        Coord getCoord() const {return m_coord;};
         std::pair<Arete*, Sommet*> getProcheVoisin();
 
     private:
         int m_id;
-        double m_x;
-        double m_y;
+        Coord m_coord;
         std::vector<const Sommet*> m_voisins;
         std::vector<Arete*> m_aretes;
         bool m_ajoute;
+
 };
 
 #endif // SOMMET_H
