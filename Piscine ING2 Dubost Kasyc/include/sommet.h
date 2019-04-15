@@ -21,7 +21,7 @@ class Sommet
         bool isAjoute()const{return m_ajoute;};
 
         Coord getCoord() const {return m_coord;};
-        std::pair<Arete*, Sommet*> getProcheVoisin();
+        std::pair<Arete*, Sommet*> getProcheVoisin(int critere);
 
     private:
         int m_id;

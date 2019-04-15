@@ -23,7 +23,7 @@ void Sommet::ajouterArete(Arete* a)
     m_aretes.push_back(a);
 }
 
-std::pair<Arete*, Sommet*> Sommet::getProcheVoisin()
+std::pair<Arete*, Sommet*> Sommet::getProcheVoisin(int critere)
 {
     Sommet* s1 = nullptr;
     Arete* a1 = new Arete(-1,new Sommet(-1,20,20),new Sommet(-1,20,20));
@@ -50,7 +50,7 @@ std::pair<Arete*, Sommet*> Sommet::getProcheVoisin()
 
     for(auto arete : m_aretes)
     {
-        if (arete->getPoids() < a1->getPoids() && !arete->getAutreSommet(this)->isAjoute() && arete!=nullptr)
+        if (arete->getPoids()[critere] < a1->getPoids()[critere] && !arete->getAutreSommet(this)->isAjoute() && arete!=nullptr)
         {
             a1 = arete;
             s1 = arete->getAutreSommet(this);

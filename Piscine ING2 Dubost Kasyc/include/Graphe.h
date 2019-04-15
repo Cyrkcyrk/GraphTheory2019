@@ -20,7 +20,10 @@ class Graphe
 
         Graphe algoPrim(int depart, int critere) const;
 
+        int getNbrCritere() const {return m_NbrCritere;};
+
     private:
+        int m_NbrCritere;
         std::unordered_map<int,Sommet*> m_sommets;
         std::unordered_map<int,Arete*> m_aretes;
 };

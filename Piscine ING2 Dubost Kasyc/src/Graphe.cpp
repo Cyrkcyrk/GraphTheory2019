@@ -3,6 +3,8 @@
 #include "conf.h"
 #include <iostream>
 #include <fstream>
+#include <iomanip>
+#include <sstream>
 
 Graphe::Graphe(std::string nomFichierSommet, std::string nomFichierArete)
 {
@@ -31,10 +33,24 @@ void Graphe::afficherGraphe(Svgfile& svgout)
 {
     for(auto a : m_aretes)
     {
-        //std::cout << a.second->getId() << " ";
+        std::stringstream stream;
+        stream << std::fixed << std::setprecision(1);
+        for (unsigned int i = 0; i< a.second->getPoids().size(); ++i)
+        {
+            stream << a.second->getPoids()[i];
+
+            if (i < a.second->getPoids().size()-1)
+            {
+                stream << "___";
+            }
+        }
+
 
         std::vector<Coord> tmp = a.second->getCoord();
         svgout.addLine(tmp[0].getX(), tmp[0].getY(), tmp[1].getX(), tmp[1].getY(), TRAIT_EPAISSEUR, TRAIT_COULEUR);
+
+        Coord milieu = Coord((tmp[0].getX() + tmp[1].getX())/2, (tmp[0].getY() + tmp[1].getY())/2);
+        svgout.addText(milieu.getX(), milieu.getY(), stream.str(), "rgb(50, 50, 50)");
 
     }
     std::cout<<std::endl;
@@ -44,6 +60,8 @@ void Graphe::afficherGraphe(Svgfile& svgout)
         std::cout << s.second->getId() << " ";
 
         Coord tmp = s.second->getCoord();
+
+
 
         svgout.addCircle(tmp.getX(), tmp.getY(), POINT_RAYON, POINT_COULEUR);
         svgout.addText(tmp.getX(), tmp.getY()+POINT_RAYON/2, std::to_string(s.second->getId()), POINT_TEXT);
@@ -110,6 +128,9 @@ void Graphe::lireArete(std::string nomFichier)
     ifs >> nbPoids;
     if ( ifs.fail() )
         throw std::runtime_error("Probleme lecture du nombre de poids");
+
+    this->m_NbrCritere = nbPoids;
+
     double poids;
     int id;
     //lecture des sommets
@@ -166,13 +187,13 @@ Graphe Graphe::algoPrim(int depart, int critere) const
             if(s.second->isAjoute())
             {
 
-                potSommetPoidsMin = s.second->getProcheVoisin().second;
-                potAretePoidsMin = s.second->getProcheVoisin().first;
+                potSommetPoidsMin = s.second->getProcheVoisin(critere).second;
+                potAretePoidsMin = s.second->getProcheVoisin(critere).first;
                 if(potSommetPoidsMin == nullptr)
                 {
                     continue;
                 }
-                if(potAretePoidsMin->getPoids() < aretePoidsMin->getPoids())
+                if(potAretePoidsMin->getPoids()[critere] < aretePoidsMin->getPoids()[critere])
                 {
 
                     sommetPoidsMin = potSommetPoidsMin;
