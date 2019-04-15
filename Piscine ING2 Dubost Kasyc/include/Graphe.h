@@ -18,6 +18,8 @@ class Graphe
         void lireArete(std::string nomFichierArete);
         void afficherGraphe(Svgfile& svgout);
 
+        void compteurBinaire();
+
         Graphe algoPrim(int depart, int critere) const;
 
         int getNbrCritere() const {return m_NbrCritere;};
@@ -26,6 +28,7 @@ class Graphe
         int m_NbrCritere;
         std::unordered_map<int,Sommet*> m_sommets;
         std::unordered_map<int,Arete*> m_aretes;
+        std::vector<std::vector<std::string>> m_tabDesPossibles;
 };
 
 #endif // GRAPHE_H

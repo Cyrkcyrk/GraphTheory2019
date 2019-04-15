@@ -5,6 +5,7 @@
 #include <fstream>
 #include <iomanip>
 #include <sstream>
+#include <math.h>
 
 Graphe::Graphe(std::string nomFichierSommet, std::string nomFichierArete)
 {
@@ -234,3 +235,9 @@ Graphe Graphe::algoPrim(int depart, int critere) const
     Graphe g(chemin,aretes);
     return g;
 }
+
+
+
+
+
+

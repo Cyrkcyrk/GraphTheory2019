@@ -4,9 +4,11 @@
 #include "sommet.h"
 #include "arete.h"
 #include "svgfile.h"
+#include "maths.h"
 
 int main()
 {
+    /*
     //Graphe g("graphes/cubetown.txt","graphes/cubetown_weights_0.txt");
     Graphe g("graphes/triville.txt","graphes/triville_weights_1.txt");
     {
@@ -22,5 +24,7 @@ int main()
         svgout.addGrid(100, true, "rgb(200, 200, 200)");
         g.algoPrim(depart,i).afficherGraphe(svgout);
     }
+    */
+    maths::compteurBinaire();
     return 0;
 }
