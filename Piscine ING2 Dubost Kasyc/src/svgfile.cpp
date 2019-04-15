@@ -1,5 +1,6 @@
 ﻿#include "svgfile.h"
 #include <iostream>
+#include <iomanip>
 #include <sstream>
 
 const std::string svgHeader =
@@ -110,27 +111,36 @@ void Svgfile::addText(double x, double y, std::string text, std::string color)
             << attrib("x", x)
             << attrib("y", y)
             << attrib("fill", color)
+            << attrib("font-size", 9)
+            << attrib("alignment-baseline", "middle")
+            << attrib("text-anchor", "middle")
             << ">" << text << "</text>\n";
 }
 
 
 void Svgfile::addGrid(double span, bool numbering, std::string color)
 {
+    //https://stackoverflow.com/questions/29200635/convert-float-to-string-with-precision-number-of-decimal-digits-specified
+
     double y=0;
     while (y<=m_height)
     {
+        std::stringstream stream;
+        stream << std::fixed << std::setprecision(2) << y;
         addLine(0, y, m_width, y, 1, color);
         if (numbering)
-            addText(5, y-5, std::to_string(y), color);
+            addText(5, y-5, stream.str(), color);
         y+=span;
     }
 
     double x=0;
     while (x<=m_width)
     {
+        std::stringstream stream;
+        stream << std::fixed << std::setprecision(2) << x;
         addLine(x, 0, x, m_height, 1, color);
         if (numbering)
-            addText(x+5, 15, std::to_string(x), color);
+            addText(x+5, 15, stream.str(), color);
         x+=span;
     }
 }

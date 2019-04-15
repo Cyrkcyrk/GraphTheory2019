@@ -1,7 +1,7 @@
 #include "sommet.h"
 
 Sommet::Sommet(int id, double x, double y)
-    : m_id(id), m_x(x), m_y(y)
+    : m_id(id), m_coord(Coord(x, y))
 {
 
 }

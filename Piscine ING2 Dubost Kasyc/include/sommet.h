@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "arete.h"
+#include "Coord.h"
 
 class Sommet
 {
@@ -14,11 +15,11 @@ class Sommet
         void ajouterArete(Arete* a);
 
         int getId()const{return m_id;};
+        Coord getCoord() const {return m_coord;};
 
     private:
         int m_id;
-        double m_x;
-        double m_y;
+        Coord m_coord;
         std::vector<Sommet*> m_voisins;
 };
 

@@ -7,10 +7,12 @@
 
 int main()
 {
-    Graphe g("graphes/broadway.txt","graphes/broadway_weights_0.txt");
-
-    g.afficherGraphe();
     Svgfile svgout;
+    svgout.addGrid(100, true, "rgb(200, 200, 200)");
+    Graphe g("graphes/cubetown.txt","graphes/cubetown_weights_0.txt");
+
+    g.afficherGraphe(svgout);
+
 
     return 0;
 }

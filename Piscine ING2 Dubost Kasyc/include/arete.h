@@ -2,6 +2,7 @@
 #define ARETE_H
 
 #include <vector>
+#include "Coord.h"
 
 class Sommet;
 
@@ -12,6 +13,8 @@ class Arete
         virtual ~Arete();
 
         void addPoids(std::vector<double> tabPoids);
+
+        std::vector<Coord> getCoord() const;
 
     private:
         int m_id;

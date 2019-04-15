@@ -1,4 +1,6 @@
 #include "Graphe.h"
+#include "svgfile.h"
+#include "conf.h"
 #include <iostream>
 #include <fstream>
 
@@ -13,17 +15,30 @@ Graphe::~Graphe()
     //dtor
 }
 
-void Graphe::afficherGraphe()
+void Graphe::afficherGraphe(Svgfile& svgout)
 {
+    for(auto a : m_aretes)
+    {
+        //std::cout << a.second->getId() << " ";
+
+        std::vector<Coord> tmp = a.second->getCoord();
+        svgout.addLine(tmp[0].getX(), tmp[0].getY(), tmp[1].getX(), tmp[1].getY(), TRAIT_EPAISSEUR, TRAIT_COULEUR);
+
+    }
+    std::cout<<std::endl;
     for(auto s : m_sommets)
     {
         std::cout << s.second->getId() << " ";
+
+        Coord tmp = s.second->getCoord();
+
+        svgout.addCircle(tmp.getX(), tmp.getY(), POINT_RAYON, POINT_COULEUR);
+        svgout.addText(tmp.getX(), tmp.getY()+POINT_RAYON/2, std::to_string(s.second->getId()), POINT_TEXT);
+
+
     }
-    std::cout<<std::endl;
-    for(auto a : m_aretes)
-    {
-        std::cout << a.second->getId() << " ";
-    }
+
+
 }
 
 void Graphe::lireSommet(std::string nomFichier)
