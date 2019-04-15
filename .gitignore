@@ -3,5 +3,6 @@
 *.cbp
 *.depend
 *.layout
+*.svg
 bin/
 obj/
