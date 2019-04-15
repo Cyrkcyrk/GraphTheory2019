@@ -13,6 +13,12 @@ class Arete
 
         void addPoids(std::vector<double> tabPoids);
 
+        const int getId()const {return m_id;};
+        Sommet* getS1()const{return m_sommet1;};
+        Sommet* getS2()const{return m_sommet2;};
+        const std::vector<double> getPoids()const{return m_poids;};
+        Sommet* getAutreSommet(Sommet* s){if (m_sommet1 != s) return m_sommet1; else return m_sommet2;};
+
     private:
         int m_id;
         Sommet* m_sommet1;

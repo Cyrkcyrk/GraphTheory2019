@@ -10,11 +10,14 @@ class Graphe
 {
     public:
         Graphe(std::string nomFichierSommet, std::string nomFichierArete);
+        Graphe(std::vector<Sommet*> sommets, std::vector<Arete*> aretes);
         virtual ~Graphe();
 
         void lireSommet(std::string nomFichierSommet);
         void lireArete(std::string nomFichierArete);
         void afficherGraphe();
+
+        Graphe algoPrim(int depart) const;
 
     private:
         std::unordered_map<int,Sommet*> m_sommets;

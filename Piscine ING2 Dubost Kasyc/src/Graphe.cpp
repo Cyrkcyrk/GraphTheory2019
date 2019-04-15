@@ -8,6 +8,18 @@ Graphe::Graphe(std::string nomFichierSommet, std::string nomFichierArete)
     lireArete(nomFichierArete);
 }
 
+Graphe::Graphe(std::vector<Sommet*> sommets, std::vector<Arete*> aretes)
+{
+    for(auto s : sommets)
+    {
+        m_sommets.insert({s->getId(),s});
+    }
+    for(auto a  : aretes)
+    {
+        m_aretes.insert({a->getId(),a});
+    }
+}
+
 Graphe::~Graphe()
 {
     //dtor
@@ -22,7 +34,7 @@ void Graphe::afficherGraphe()
     std::cout<<std::endl;
     for(auto a : m_aretes)
     {
-        std::cout << a.second->getId() << " ";
+        std::cout << a.second->getId() << " | " << a.second->getS1()->getId() << " <--" << a.second->getPoids()[0] << " " << a.second->getPoids()[1] << "-- "<< a.second->getS2()->getId() << std::endl;
     }
 }
 
@@ -98,4 +110,92 @@ void Graphe::lireArete(std::string nomFichier)
         }
         m_aretes.find(id)->second->addPoids(tabPoids);
     }
+}
+
+
+Graphe Graphe::algoPrim(int depart) const
+{
+    std::vector<Sommet*> chemin;
+    std::vector<Arete*> aretes;
+
+    for(auto s : m_sommets)
+    {
+        s.second->retirer();
+    }
+
+    m_sommets.find(depart)->second->ajouter();
+    chemin.push_back(m_sommets.find(depart)->second);
+    unsigned int i=1;
+
+    Arete* b1 = new Arete(100000,new Sommet(-1,1,1),new Sommet(-1,1,1));
+    Sommet* b2 = new Sommet(-1,1,1);
+    Sommet* b3 = new Sommet(-1,1,1);
+    Arete *b4 = new Arete(10000,new Sommet(-1,1,1),new Sommet(-1,1,1));
+    b1->addPoids({1000,10000});
+    b4->addPoids({1000,10000});
+    Arete* potAretePoidsMin;
+    Arete* aretePoidsMin;
+    Sommet* sommetPoidsMin;
+    Sommet* potSommetPoidsMin;
+    bool trouve =false;
+
+    while(i<m_sommets.size())
+    {
+        potAretePoidsMin = b1;
+        potSommetPoidsMin = b2;
+        sommetPoidsMin = b3;
+        aretePoidsMin = b4;
+
+        trouve = false;
+        for(auto s : m_sommets)
+        {
+            if(s.second->isAjoute())
+            {
+
+                potSommetPoidsMin = s.second->getProcheVoisin().second;
+                potAretePoidsMin = s.second->getProcheVoisin().first;
+                if(potSommetPoidsMin == nullptr)
+                {
+                    continue;
+                }
+                if(potAretePoidsMin->getPoids() < aretePoidsMin->getPoids())
+                {
+
+                    sommetPoidsMin = potSommetPoidsMin;
+                    aretePoidsMin = potAretePoidsMin;
+                    trouve = true;
+                }
+            }
+        }
+        if (trouve)
+        {
+            if(aretePoidsMin->getS1()->isAjoute() && !aretePoidsMin->getS2()->isAjoute())
+            {
+                aretePoidsMin->getS2()->ajouter();
+                chemin.push_back(sommetPoidsMin);
+                aretes.push_back(aretePoidsMin);
+                i++;
+            }
+            if(aretePoidsMin->getS2()->isAjoute() && !aretePoidsMin->getS1()->isAjoute())
+            {
+                aretePoidsMin->getS1()->ajouter();
+                chemin.push_back(sommetPoidsMin);
+                aretes.push_back(aretePoidsMin);
+                i++;
+            }
+        }
+    }
+    std::cout<<std::endl;
+
+    for(unsigned int i=0;i<chemin.size();i++)
+    {
+        std::cout << chemin[i]->getId() << " ";
+        if (i<chemin.size()-1)
+        {
+            std::cout << "<--" << aretes[i]->getPoids()[0] << "-- ";
+        }
+    }
+
+    Graphe g(chemin,aretes);
+    return g;
 }

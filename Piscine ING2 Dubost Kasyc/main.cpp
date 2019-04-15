@@ -10,7 +10,7 @@ int main()
     Graphe g("graphes/broadway.txt","graphes/broadway_weights_0.txt");
 
     g.afficherGraphe();
-    Svgfile svgout;
+    g.algoPrim(1);
 
     return 0;
 }
