@@ -4,10 +4,10 @@
 #include "sommet.h"
 #include "arete.h"
 
-using namespace std;
-
 int main()
 {
-    Graphe g("graphes/broadway.txt");
+    Graphe g("graphes/broadway.txt","graphes/broadway_weights_0.txt");
+
+    g.afficherGraphe();
     return 0;
 }

@@ -16,3 +16,9 @@ void Sommet::ajouterVoisin(Sommet* s)
 {
 
 }
+
+
+void Sommet::ajouterArete(Arete* a)
+{
+
+}
