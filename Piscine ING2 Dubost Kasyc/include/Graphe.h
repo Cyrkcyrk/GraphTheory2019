@@ -9,10 +9,12 @@
 class Graphe
 {
     public:
-        Graphe(std::string nomFichier);
+        Graphe(std::string nomFichierSommet, std::string nomFichierArete);
         virtual ~Graphe();
 
-        void lireFichier(std::string nomFichier);
+        void lireSommet(std::string nomFichierSommet);
+        void lireArete(std::string nomFichierArete);
+        void afficherGraphe();
 
     private:
         std::unordered_map<int,Sommet*> m_sommets;
