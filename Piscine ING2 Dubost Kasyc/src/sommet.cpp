@@ -79,10 +79,14 @@ std::unordered_set<const Sommet*> Sommet::rechercherCC(std::unordered_set<const 
     return cc;
 }
 
-bool Sommet::DFSM(unsigned int nbSommets) const
+std::tuple<bool,int,int> Sommet::DFSM(unsigned int nbSommets) const
 {
     std::unordered_set<const Sommet*> decouverts;
     std::stack<const Sommet*> pile;
+
+    std::vector<int> poidsChemin;
+    poidsChemin.push_back(0);
+    poidsChemin.push_back(0);
 
     pile.push(this);
     const Sommet* Ec;
@@ -94,6 +98,8 @@ bool Sommet::DFSM(unsigned int nbSommets) const
         {
             if(Ec->getArete(s)!=NULL && Ec->getArete(s)->isAjoute() && decouverts.find(s) == decouverts.end())
             {
+                poidsChemin[0] += Ec->getArete(s)->getPoids()[0];
+                poidsChemin[1] += Ec->getArete(s)->getPoids()[1];
                 pile.push(s);
             }
         }
@@ -103,11 +109,11 @@ bool Sommet::DFSM(unsigned int nbSommets) const
 
     if(decouverts.size() == nbSommets)
     {
-        return true;
+        return std::make_tuple(true,poidsChemin[0],poidsChemin[1]);
     }
     else
     {
-        return false;
+        return std::make_tuple(false,poidsChemin[0],poidsChemin[1]);
     }
 }
 

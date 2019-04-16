@@ -132,6 +132,7 @@ std::vector<unsigned int> maths::decalage(std::vector<unsigned int> position, in
 }
 
 std::vector<std::vector<char>> maths::compteur_etat_possibles(int nb_sommet, int nb_arete, Graphe* g)
+std::vector<std::vector<char>> maths::compteur_etat_possibles(int nb_sommet, int nb_arete, Graphe* g)
 {
     std::vector<std::vector<char>> retour;
     std::vector<unsigned int> position;
@@ -178,14 +179,15 @@ std::vector<std::vector<char>> maths::compteur_etat_possibles(int nb_sommet, int
                 g->getAretes()[h]->retirer();
             }
         }
-        if (g->DFSM())
+        bool connexe;
+        int poidsCrit1;
+        int poidsCrit2;
+        std::tie(connexe, poidsCrit1, poidsCrit2) = g->DFSM();
+        if(connexe)
         {
             retour.push_back(binaire);
             //continue;
         }
-
-        /// Calcul poids
-
 
     }
 

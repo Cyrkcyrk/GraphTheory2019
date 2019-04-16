@@ -34,7 +34,7 @@ class Graphe
         std::unordered_map<int,Arete*> getAretes(){return m_aretes;};
         std::unordered_map<int,Sommet*> getSommets(){return m_sommets;};
 
-        bool DFSM();
+        std::tuple<bool,int,int> DFSM();
 
     private:
         int m_NbrCritere;
