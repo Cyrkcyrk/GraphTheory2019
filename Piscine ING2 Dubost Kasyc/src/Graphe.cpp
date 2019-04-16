@@ -223,16 +223,6 @@ Graphe Graphe::algoPrim(int depart, int critere) const
             }
         }
     }
-    std::cout<<std::endl;
-
-    for(i=0;i<chemin.size();i++)
-    {
-        std::cout << chemin[i]->getId() << " ";
-        if (i<chemin.size()-1)
-        {
-            std::cout << "<--" << aretes[i]->getPoids()[critere] << "-- ";
-        }
-    }
 
     Graphe g(chemin,aretes);
     return g;
@@ -243,11 +233,19 @@ void Graphe::palero()
 {
     std:: cout << "Sommet : " << m_sommets.size() << " - Arrete : " << m_aretes.size() << std::endl;
 
-    std::vector<std::vector<char>> tableauDesPossibles = maths::compteur_etat_possibles(m_sommets.size(),m_aretes.size()); // Tableau des possibles
+    std::vector<std::vector<char>> tableauDesPossibles = maths::compteur_etat_possibles(m_sommets.size()-1,m_aretes.size()); // Tableau des possibles
 
-    std::cout <<"Nbr possibilitees : "<< tableauDesPossibles.size() << std::endl;
+    std::cout <<"Nbr possibilites : "<< tableauDesPossibles.size() << std::endl;
 
-    /*
+    /*for (int i = 0; i< tableauDesPossibles.size(); i++)
+    {
+        std::cout << std::endl << i << " : ";
+        for (int j=0; j< tableauDesPossibles[i].size(); j++)
+        {
+            std::cout << int(tableauDesPossibles[i][j]);
+        }
+    }*/
+    std::cout<<"Recherche des connexes" <<std::endl;
     std::unordered_set<Sommet*> sommetAjoute;
 
     for(unsigned int i=0;i<tableauDesPossibles.size();i++) // Pour chaque possibilite
@@ -255,19 +253,34 @@ void Graphe::palero()
         sommetAjoute.clear();
         for(unsigned int j=0;j<tableauDesPossibles[i].size();j++) // Pour chaque arete
         {
-            if (tableauDesPossibles[i][j] == '1') // Si l'arete est selectionnee
+            if ((int)tableauDesPossibles[i][j] == 1) // Si l'arete est selectionnee
             {
-                sommetAjoute.insert(m_aretes[j]->getS1()); // On marque les sommets aux extremites de l'arete
-                sommetAjoute.insert(m_aretes[j]->getS2()); // On marque les sommets aux extremites de l'arete
+                if(sommetAjoute.find(m_aretes[j]->getS1()) == sommetAjoute.end())
+                {
+                    sommetAjoute.insert(m_aretes[j]->getS1()); // On marque les sommets aux extremites de l'arete
+                }
+                if(sommetAjoute.find(m_aretes[j]->getS2()) == sommetAjoute.end())
+                {
+                    sommetAjoute.insert(m_aretes[j]->getS2()); // On marque les sommets aux extremites de l'arete
+                }
             }
         }
+
         if(sommetAjoute.size() != m_sommets.size())
         {
             tableauDesPossibles.erase(tableauDesPossibles.begin()+i);
         }
     }
+    for (int i = 0; i< tableauDesPossibles.size(); i++)
+    {
+        std::cout << std::endl << i << " : ";
+        for (int j=0; j< tableauDesPossibles[i].size(); j++)
+        {
+            std::cout << int(tableauDesPossibles[i][j]);
+        }
+    }
 
-    std::cout <<tableauDesPossibles.size() <<std::endl;
-    */
+    std::cout << "Nombre de possibilites connexes : "<<tableauDesPossibles.size() <<std::endl;
+
 }
 

@@ -41,9 +41,6 @@ int main()
         }
     }
     */
-
-    std::cout << "ordre : " << g.getOrdre() <<std::endl;
-    std::cout << "taille : " << g.getTaille() <<std::endl;
     g.palero();
 
 
