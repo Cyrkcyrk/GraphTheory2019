@@ -8,9 +8,9 @@
 
 int main()
 {
-    /*
+
     //Graphe g("graphes/cubetown.txt","graphes/cubetown_weights_0.txt");
-    Graphe g("graphes/triville.txt","graphes/triville_weights_1.txt");
+    Graphe g("graphes/broadway.txt","graphes/broadway_weights_0.txt");
     {
         Svgfile svgout("Graphe.svg");
         svgout.addGrid(100, true, "rgb(200, 200, 200)");
@@ -24,7 +24,11 @@ int main()
         svgout.addGrid(100, true, "rgb(200, 200, 200)");
         g.algoPrim(depart,i).afficherGraphe(svgout);
     }
-    */
-    maths::compteurBinaire();
+    std::cout << "ordre : " << g.getOrdre() <<std::endl;
+    std::cout << "taille : " << g.getTaille() <<std::endl;
+
+    g.palero();
+    std::cout<<maths::nCr(20,40);
+
     return 0;
 }

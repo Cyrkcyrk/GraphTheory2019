@@ -2,7 +2,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
-
+#include "math.h"
 maths::maths()
 {
 }
@@ -11,9 +11,9 @@ maths::~maths()
 {
 }
 
-
+/*
 // https://www.geeksforgeeks.org/program-calculate-value-ncr/
-int maths::fact(int n)
+unsigned long maths::fact(int n)
 {
 	int res = 1;
 	for (int i = 2; i <= n; i++)
@@ -21,57 +21,89 @@ int maths::fact(int n)
 	return res;
 }
 
-int maths::nCr(int r, int n)
+unsigned long maths::nCr(int r, int n)
 {
-	return fact(n) / (fact(r) * fact(n - r));
+	int rep = 1;
+	if(r>n-r)
+    {
+        r = n-r;
+    }
+    for(int i= 0; i<r;i++)
+    {
+        rep = rep*(n-i);
+        rep = rep/(i+1);
+    }
+    return rep;
 }
 
 //-----------------------------------------------
 
 // https://www.javatpoint.com/cpp-program-to-convert-decimal-to-binary
-void maths::compteurBinaire()
+std::vector<std::vector<char>> maths::compteurBinaire(int plusGrandNombre,unsigned int ordre,unsigned int taille)
 {
-    std::vector<std::vector<char>> possibilite;
+    std::vector<std::vector<char>> tabDesPossibilite;
 
-    int ordre = 20;
-    int nbAreteSelected = 0;
-
-    for (int i=0 ; i<ordre; i++)
+    for (int i=0 ; i<=plusGrandNombre; i++)
     {
         int n = i;
-        std::vector<char> a;
+        std::vector<char> possibilite;
         for(;n>0;) // Convertit le nb en binaire
         {
-            a.push_back(n%2);
+            possibilite.push_back((char)n%2+'0');
             n = n/2;
         }
-
-        std::cout << "Valeur binaire de "<< i << " : ";
-        for (int j = a.size()-1; j>=0; j--)
+        int compteurDe1 = 0;
+        for(auto car:possibilite)
         {
-            std::cout << int(a[j]);
+            if(car == '1')
+            {
+                compteurDe1++;
+            }
+        }
+        if(compteurDe1 == ordre-1)
+        {
+            while(possibilite.size()<taille)
+            {
+                possibilite.push_back('0');
+            }
+            tabDesPossibilite.push_back(possibilite);
+        }
+    }
+    return tabDesPossibilite;
+}
+
+
+std::vector<std::vector<char>> maths::combinaisonsDe1(int ordre, int taille)
+{
+    std::vector<std::vector<char>> tabDesPossibles;
+    std::vector<char> plusGrand;
+
+    for(int j=0;j<taille;j++) // Ajoute nbaretes nombre de bits
+    {
+        if(j<ordre-1)
+        {
+            plusGrand.push_back('1');
+        }
+        else
+        {
+            plusGrand.push_back('0');
         }
 
-        std::cout << std::endl;
     }
 
-/*
-    for(int i = 0; i < a.size();i++) // Compte le nb d'arete selectionnees (nb de 1 dans le tableau binaire)
+    tabDesPossibles = compteurBinaire(binToInt(plusGrand),ordre,taille);
+
+    return tabDesPossibles;
+}
+
+int maths::binToInt(std::vector<char>& bin)
+{
+    int rep = 0;
+
+    for(unsigned int i = 0;i<bin.size()-1;i++)
     {
-        //nbAreteSelected += a;
+        rep += (bin[i]-'0')*pow(2,(bin.size()-1-i));
     }
-
-    if(nbAreteSelected == )
-    {
-
-    }
-
-    if(possibilite.count)
-
-    for(int i = 0; i< nCr(m_sommets.size()-1,m_aretes.size()) ; i++)
-    {
-        //if()
-        tabDesPossible.push_back();
-    }
-*/
+    std::cout << rep << std::endl;
+    return rep;
 }
