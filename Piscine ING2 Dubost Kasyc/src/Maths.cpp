@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include "stdio.h"
+#include "math.h"
 
 maths::maths()
 {
@@ -12,12 +13,10 @@ maths::maths()
 maths::~maths()
 {
 }
-//https://www.hackerearth.com/fr/practice/notes/factorial-of-large-number/
-
 
 
 // https://www.geeksforgeeks.org/program-calculate-value-ncr/
-unsigned long maths::fact(int n)
+int maths::fact(int n)
 {
     if(n > 1)
         return n * maths::fact(n - 1);
@@ -33,7 +32,7 @@ int maths::nCr(int k, int n)
 //----------------------------------------------
 
 // https://www.javatpoint.com/cpp-program-to-convert-decimal-to-binary
-std::vector<char> maths::trasnformationIntBinaire(int n)
+std::vector<char> maths::intToBin(int n)
 {
     std::vector<char> a;
     for(;n>0;) // Convertit le nb en binaire
@@ -44,24 +43,68 @@ std::vector<char> maths::trasnformationIntBinaire(int n)
     return a;
 }
 
-void maths::compteurBinaire()
+int maths::binToInt(std::vector<char>& bin)
 {
-    std::vector<std::vector<char>> possibilite;
+    int rep = 0;
 
-    int ordre = 20;
-
-    for (int i=0 ; i<ordre; i++)
+    for(unsigned int i = 0;i<bin.size()-1;i++)
     {
-        std::vector<char> a = maths::trasnformationIntBinaire(i);
+        rep += (bin[i]-'0')*pow(2,(bin.size()-1-i));
+    }
+    std::cout << rep << std::endl;
+    return rep;
+}
 
-        std::cout << "Valeur binaire de "<< i << " : ";
-        for (int j = a.size()-1; j>=0; j--)
+// https://www.javatpoint.com/cpp-program-to-convert-decimal-to-binary
+std::vector<std::vector<char>> maths::compteurBinaire(int plusGrandNombre,unsigned int ordre,unsigned int taille)
+{
+    std::vector<std::vector<char>> tabDesPossibilite;
+
+    for (int i=0 ; i<=plusGrandNombre; i++)
+    {
+        std::vector<char> possibilite = maths::intToBin(i);
+
+        int compteurDe1 = 0;
+        for(auto car:possibilite)
         {
-            std::cout << int(a[j]);
+            if(car == '1')
+            {
+                compteurDe1++;
+            }
+        }
+        if(compteurDe1 == ordre-1)
+        {
+            while(possibilite.size()<taille)
+            {
+                possibilite.push_back('0');
+            }
+            tabDesPossibilite.push_back(possibilite);
+        }
+    }
+    return tabDesPossibilite;
+}
+
+std::vector<std::vector<char>> maths::combinaisonsDe1(int ordre, int taille)
+{
+    std::vector<std::vector<char>> tabDesPossibles;
+    std::vector<char> plusGrand;
+
+    for(int j=0;j<taille;j++) // Ajoute nbaretes nombre de bits
+    {
+        if(j<ordre-1)
+        {
+            plusGrand.push_back('1');
+        }
+        else
+        {
+            plusGrand.push_back('0');
         }
 
-        std::cout << std::endl;
     }
+
+    tabDesPossibles = compteurBinaire(binToInt(plusGrand),ordre,taille);
+
+    return tabDesPossibles;
 }
 
 
@@ -165,4 +208,3 @@ std::vector<std::vector<char>> maths::compteur_etat_possibles(int nb_sommet, int
     */
     return retour;
 }
-

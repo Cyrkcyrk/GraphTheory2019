@@ -6,6 +6,8 @@
 #include <iomanip>
 #include <sstream>
 #include <math.h>
+#include "maths.h"
+#include <unordered_set>
 
 Graphe::Graphe(std::string nomFichierSommet, std::string nomFichierArete)
 {
@@ -237,7 +239,35 @@ Graphe Graphe::algoPrim(int depart, int critere) const
 }
 
 
+void Graphe::palero()
+{
+    std:: cout << "Sommet : " << m_sommets.size() << " - Arrete : " << m_aretes.size() << std::endl;
 
+    std::vector<std::vector<char>> tableauDesPossibles = maths::compteur_etat_possibles(m_sommets.size(),m_aretes.size()); // Tableau des possibles
 
+    std::cout <<"Nbr possibilitees : "<< tableauDesPossibles.size() << std::endl;
 
+    /*
+    std::unordered_set<Sommet*> sommetAjoute;
+
+    for(unsigned int i=0;i<tableauDesPossibles.size();i++) // Pour chaque possibilite
+    {
+        sommetAjoute.clear();
+        for(unsigned int j=0;j<tableauDesPossibles[i].size();j++) // Pour chaque arete
+        {
+            if (tableauDesPossibles[i][j] == '1') // Si l'arete est selectionnee
+            {
+                sommetAjoute.insert(m_aretes[j]->getS1()); // On marque les sommets aux extremites de l'arete
+                sommetAjoute.insert(m_aretes[j]->getS2()); // On marque les sommets aux extremites de l'arete
+            }
+        }
+        if(sommetAjoute.size() != m_sommets.size())
+        {
+            tableauDesPossibles.erase(tableauDesPossibles.begin()+i);
+        }
+    }
+
+    std::cout <<tableauDesPossibles.size() <<std::endl;
+    */
+}
 

@@ -23,6 +23,10 @@ class Graphe
         Graphe algoPrim(int depart, int critere) const;
 
         int getNbrCritere() const {return m_NbrCritere;};
+        unsigned int getTaille() const {return m_aretes.size();};
+        unsigned int getOrdre() const {return m_sommets.size();};
+
+        void palero();
 
     private:
         int m_NbrCritere;

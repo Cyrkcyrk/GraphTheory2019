@@ -8,9 +8,10 @@
 
 int main()
 {
-    /*
+
     //Graphe g("graphes/cubetown.txt","graphes/cubetown_weights_0.txt");
-    Graphe g("graphes/triville.txt","graphes/triville_weights_1.txt");
+    //Graphe g("graphes/broadway.txt","graphes/broadway_weights_0.txt");
+    Graphe g("graphes/manhattan.txt","graphes/manhattan_weights_0.txt");
     {
         Svgfile svgout("Graphe.svg");
         svgout.addGrid(100, true, "rgb(200, 200, 200)");
@@ -24,14 +25,13 @@ int main()
         svgout.addGrid(100, true, "rgb(200, 200, 200)");
         g.algoPrim(depart,i).afficherGraphe(svgout);
     }
-    */
 
 
-    std::cout << maths::nCr(4, 10) << std::endl;
-    std::vector<std::vector<char>> etats = maths::compteur_etat_possibles(15, 30);
 
-    std::cout << etats.size();
-/*
+
+    //std::vector<std::vector<char>> etats = maths::compteur_etat_possibles(16, 24);
+    //std::cout << etats.size();
+    /*
     for (int i = 0; i< etats.size(); i++)
     {
         std::cout << std::endl << i << " : ";
@@ -40,7 +40,12 @@ int main()
             std::cout << int(etats[i][j]);
         }
     }
-*/
+    */
+
+    std::cout << "ordre : " << g.getOrdre() <<std::endl;
+    std::cout << "taille : " << g.getTaille() <<std::endl;
+    g.palero();
+
 
     return 0;
 }

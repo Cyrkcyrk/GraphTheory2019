@@ -3,19 +3,25 @@
 
 #include <vector>
 
-
 class maths
 {
     public:
         maths();
         virtual ~maths();
 
-        static unsigned long fact(int n);
+        static int fact(int n);
         static int nCr(int r, int n);
+
         static void compteurBinaire();
-        static std::vector<char> trasnformationIntBinaire(int n);
+        static std::vector<char> intToBin(int n);
+        static int binToInt(std::vector<char>& bin);
+
+        static std::vector<std::vector<char>> compteurBinaire(int plusGrandNombre, unsigned int ordre, unsigned int taille);
+        static std::vector<std::vector<char>> combinaisonsDe1(int ordre, int taille);
+
         static std::vector<std::vector<char>> compteur_etat_possibles(int nb_sommet, int nb_arete);
         static std::vector<int> decalage(std::vector<int> position, int nbADecaler);
+
     protected:
 
     private:
