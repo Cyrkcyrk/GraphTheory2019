@@ -25,6 +25,22 @@ int main()
         g.algoPrim(depart,i).afficherGraphe(svgout);
     }
     */
-    maths::compteurBinaire();
+
+
+    std::cout << maths::nCr(4, 10) << std::endl;
+    std::vector<std::vector<char>> etats = maths::compteur_etat_possibles(15, 30);
+
+    std::cout << etats.size();
+/*
+    for (int i = 0; i< etats.size(); i++)
+    {
+        std::cout << std::endl << i << " : ";
+        for (int j=0; j< etats[i].size(); j++)
+        {
+            std::cout << int(etats[i][j]);
+        }
+    }
+*/
+
     return 0;
 }
