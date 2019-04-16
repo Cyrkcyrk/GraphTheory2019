@@ -64,7 +64,7 @@ std::vector<std::vector<char>> maths::compteurBinaire(int plusGrandNombre,unsign
     {
         std::vector<char> possibilite = maths::intToBin(i);
 
-        int compteurDe1 = 0;
+        unsigned int compteurDe1 = 0;
         for(auto car:possibilite)
         {
             if(car == '1')
@@ -108,7 +108,7 @@ std::vector<std::vector<char>> maths::combinaisonsDe1(int ordre, int taille)
 }
 
 
-std::vector<int> maths::decalage(std::vector<int> position, int nbADecaler)
+std::vector<unsigned int> maths::decalage(std::vector<unsigned int> position, int nbADecaler)
 {
     if (position[nbADecaler] > position.size()-1 - nbADecaler)
     {
@@ -117,7 +117,7 @@ std::vector<int> maths::decalage(std::vector<int> position, int nbADecaler)
     }
     else if (nbADecaler-1 < 0)
     {
-        for (int i =0; i< position.size(); i++)
+        for (unsigned int i =0; i< position.size(); i++)
         {
             position[i] = position.size()-1-i;
         }
@@ -135,7 +135,7 @@ std::vector<std::vector<char>> maths::compteur_etat_possibles(int nb_sommet, int
 {
     std::vector<std::vector<char>> retour;
 
-    std::vector<int> position;
+    std::vector<unsigned int> position;
 
     for (int i=0; i<nb_sommet; i++)
     {
@@ -148,7 +148,7 @@ std::vector<std::vector<char>> maths::compteur_etat_possibles(int nb_sommet, int
         {
             binaire.push_back(0);
         }
-        for (int j=0; j< position.size(); j++)
+        for (unsigned int j=0; j< position.size(); j++)
         {
             binaire[position[j]] = 1;
         }
@@ -162,11 +162,11 @@ std::vector<std::vector<char>> maths::compteur_etat_possibles(int nb_sommet, int
 
         /// Creation du binaire
         std::vector<char> binaire;
-        for (int i = 0; i< nb_arete; i++)
+        for (int j = 0; j< nb_arete; j++)
         {
             binaire.push_back(0);
         }
-        for (int j=0; j< position.size(); j++)
+        for (unsigned int j=0; j< position.size(); j++)
         {
             binaire[position[j]] = 1;
         }

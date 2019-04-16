@@ -20,7 +20,7 @@ class maths
         static std::vector<std::vector<char>> combinaisonsDe1(int ordre, int taille);
 
         static std::vector<std::vector<char>> compteur_etat_possibles(int nb_sommet, int nb_arete);
-        static std::vector<int> decalage(std::vector<int> position, int nbADecaler);
+        static std::vector<unsigned int> decalage(std::vector<unsigned int> position, int nbADecaler);
 
     protected:
 

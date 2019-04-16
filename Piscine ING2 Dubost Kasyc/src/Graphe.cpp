@@ -141,7 +141,7 @@ void Graphe::lireArete(std::string nomFichier)
     {
         std::vector<double> tabPoids;
         ifs>>id; if(ifs.fail()) throw std::runtime_error("Probleme lecture id arete");
-        for (int i=0; i<nbPoids; ++i)
+        for (int j=0; j<nbPoids; ++j)
         {
             ifs>>poids; if(ifs.fail()) throw std::runtime_error("Probleme lecture poids arete");
             tabPoids.push_back(poids);
@@ -225,7 +225,7 @@ Graphe Graphe::algoPrim(int depart, int critere) const
     }
     std::cout<<std::endl;
 
-    for(unsigned int i=0;i<chemin.size();i++)
+    for(i=0;i<chemin.size();i++)
     {
         std::cout << chemin[i]->getId() << " ";
         if (i<chemin.size()-1)
