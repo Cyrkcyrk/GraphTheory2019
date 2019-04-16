@@ -131,9 +131,9 @@ std::vector<unsigned int> maths::decalage(std::vector<unsigned int> position, in
     }
 }
 
-std::vector<std::vector<char>> maths::compteur_etat_possibles(int nb_sommet, int nb_arete, Graphe* g)
+std::vector<std::vector<char>>* maths::compteur_etat_possibles(int nb_sommet, int nb_arete, Graphe* g)
 {
-    std::vector<std::vector<char>> retour;
+    std::vector<std::vector<char>>* retour = new std::vector<std::vector<char>>;
     std::vector<unsigned int> position;
 
     //Creation du binaire de base
@@ -142,9 +142,10 @@ std::vector<std::vector<char>> maths::compteur_etat_possibles(int nb_sommet, int
         position.push_back(nb_arete-1 -i);
     }
 
-
     for(int i=1;; i++)
     {
+        if (i%10000 == 0)
+            std::cout << i << std::endl;
         position = maths::decalage(position, nb_sommet-1);
 
         if (position.size() == 1 && position[0] == -1)
@@ -180,13 +181,8 @@ std::vector<std::vector<char>> maths::compteur_etat_possibles(int nb_sommet, int
         }
         if (g->DFSM())
         {
-            retour.push_back(binaire);
-            //continue;
+            retour->push_back(binaire);
         }
-
-        /// Calcul poids
-
-
     }
 
     /*

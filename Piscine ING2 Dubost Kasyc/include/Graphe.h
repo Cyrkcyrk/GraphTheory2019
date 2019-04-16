@@ -26,6 +26,7 @@ class Graphe
         unsigned int getTaille() const {return m_aretes.size();};
         unsigned int getOrdre() const {return m_sommets.size();};
 
+        void addSommet(int id, double X, double Y);
 
         int rechercher_afficherToutesCC();
         void pareto();

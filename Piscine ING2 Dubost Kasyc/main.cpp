@@ -9,8 +9,8 @@
 int main()
 {
     //Graphe g("graphes/broadway.txt","graphes/broadway_weights_0.txt");
-    //Graphe g("graphes/cubetown.txt","graphes/cubetown_weights_0.txt");
-    Graphe g("graphes/manhattan.txt","graphes/manhattan_weights_0.txt");
+    Graphe g("graphes/cubetown.txt","graphes/cubetown_weights_0.txt");
+    //Graphe g("graphes/manhattan.txt","graphes/manhattan_weights_0.txt");
     //Graphe g("graphes/triville.txt","graphes/triville_weights_0.txt");
     {
         Svgfile svgout("Graphe.svg");
@@ -26,21 +26,6 @@ int main()
         g.algoPrim(depart,i).afficherGraphe(svgout);
     }
 
-
-
-
-    //std::vector<std::vector<char>> etats = maths::compteur_etat_possibles(16, 24);
-    //std::cout << etats.size();
-    /*
-    for (int i = 0; i< etats.size(); i++)
-    {
-        std::cout << std::endl << i << " : ";
-        for (int j=0; j< etats[i].size(); j++)
-        {
-            std::cout << int(etats[i][j]);
-        }
-    }
-    */
     g.pareto();
 
 

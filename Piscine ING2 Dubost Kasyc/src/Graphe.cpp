@@ -260,13 +260,17 @@ int Graphe::rechercher_afficherToutesCC()
 
 void Graphe::pareto()
 {
+    //maths::compteur_etat_possibles(m_sommets.size()-1,m_aretes.size(),this); // Tableau des possibles
+
     std:: cout << "Sommet : " << m_sommets.size() << " - Arrete : " << m_aretes.size() << std::endl;
 
-    std::vector<std::vector<char>> tableauDesPossibles = maths::compteur_etat_possibles(m_sommets.size()-1,m_aretes.size(),this); // Tableau des possibles
+    std::vector<std::vector<char>>* tableauDesPossibles = maths::compteur_etat_possibles(m_sommets.size()-1,m_aretes.size(),this); // Tableau des possibles
 
-    std::cout <<"Nbr possibilites : "<< tableauDesPossibles.size() << std::endl;
+    std::cout <<"Nbr possibilites : "<< tableauDesPossibles->size() << std::endl;
 
-    /*for (int i = 0; i< tableauDesPossibles.size(); i++)
+    delete(tableauDesPossibles);
+/*
+    for (int i = 0; i< tableauDesPossibles.size(); i++)
     {
         std::cout << std::endl << i << " : ";
         for (int j=0; j< tableauDesPossibles[i].size(); j++)
@@ -299,9 +303,8 @@ void Graphe::pareto()
         {
             std::cout << int(tableauDesPossibles[i][j]);
         }
-    }*/
-
-    std::cout << "Nombre de possibilites connexes : "<<tableauDesPossibles.size() <<std::endl;
+    }
+*/
 
 }
 
@@ -319,3 +322,8 @@ bool Graphe::DFSM() //DFS Marque
     return s0->DFSM(nbSommetM);
 }
 
+
+void Graphe::addSommet(int id, double X, double Y)
+{
+    m_sommets.insert({id, new Sommet(id, X, Y)});
+}
