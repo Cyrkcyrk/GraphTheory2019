@@ -4,7 +4,7 @@
 #include <vector>
 #include "arete.h"
 #include "Coord.h"
-
+#include <unordered_set>
 class Sommet
 {
     public:
@@ -22,7 +22,11 @@ class Sommet
 
         Coord getCoord() const {return m_coord;};
         std::pair<Arete*, Sommet*> getProcheVoisin(int critere);
+        std::vector<const Sommet*> getVoisins()const{return m_voisins;};
+        Arete* getArete(const Sommet* s2)const;
 
+        std::unordered_set<const Sommet*> rechercherCC(std::unordered_set<const Sommet*> cc) const;
+        bool DFSM(unsigned int nbSommets) const;
     private:
         int m_id;
         Coord m_coord;

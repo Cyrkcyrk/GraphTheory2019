@@ -21,11 +21,16 @@ class Arete
         Sommet* getAutreSommet(Sommet* s){if (m_sommet1 != s) return m_sommet1; else return m_sommet2;};
         std::vector<Coord> getCoord() const;
 
+        bool isAjoute()const{return m_marque;};
+        void ajouter(){m_marque = true;};
+        void retirer(){m_marque = false;};
+
     private:
         int m_id;
         Sommet* m_sommet1;
         Sommet* m_sommet2;
         std::vector<double> m_poids;
+        bool m_marque;
 };
 
 #endif // ARETE_H

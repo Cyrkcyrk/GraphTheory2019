@@ -26,7 +26,15 @@ class Graphe
         unsigned int getTaille() const {return m_aretes.size();};
         unsigned int getOrdre() const {return m_sommets.size();};
 
-        void palero();
+
+        int rechercher_afficherToutesCC();
+        void pareto();
+        void parcoursDFS(int id) const;
+
+        std::unordered_map<int,Arete*> getAretes(){return m_aretes;};
+        std::unordered_map<int,Sommet*> getSommets(){return m_sommets;};
+
+        bool DFSM();
 
     private:
         int m_NbrCritere;

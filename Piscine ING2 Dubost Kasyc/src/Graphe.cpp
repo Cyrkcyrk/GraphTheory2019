@@ -229,11 +229,40 @@ Graphe Graphe::algoPrim(int depart, int critere) const
 }
 
 
-void Graphe::palero()
+int Graphe::rechercher_afficherToutesCC()
+{
+    int i=0;
+    std::unordered_set<const Sommet*> newConnex;
+    std::unordered_set<const Sommet*> decouverts;
+    std::vector<std::unordered_set<const Sommet*>> composConnex;
+    for(auto s : m_sommets) // Pour chaque sommet du graphe
+    {
+        if (decouverts.find(s.second) == decouverts.end()) // Non decouvert
+        {
+            newConnex = s.second->rechercherCC(newConnex); // Recherhe tous sommets composante connexe
+            for(auto newS : newConnex)
+            {
+                if(decouverts.find(newS) == decouverts.end())
+                {
+                    decouverts.insert(newS);
+                }
+            }
+            composConnex.push_back(s.second->rechercherCC(newConnex)); // Ajoute la compo au tab de compo
+            newConnex.erase(newConnex.begin(),newConnex.end());
+            i++;
+        }
+    }
+    composConnex.push_back(newConnex);
+    std::cout << "nombre cc :" << i << std::endl;
+    return i;
+}
+
+
+void Graphe::pareto()
 {
     std:: cout << "Sommet : " << m_sommets.size() << " - Arrete : " << m_aretes.size() << std::endl;
 
-    std::vector<std::vector<char>> tableauDesPossibles = maths::compteur_etat_possibles(m_sommets.size()-1,m_aretes.size()); // Tableau des possibles
+    std::vector<std::vector<char>> tableauDesPossibles = maths::compteur_etat_possibles(m_sommets.size()-1,m_aretes.size(),this); // Tableau des possibles
 
     std::cout <<"Nbr possibilites : "<< tableauDesPossibles.size() << std::endl;
 
@@ -244,25 +273,17 @@ void Graphe::palero()
         {
             std::cout << int(tableauDesPossibles[i][j]);
         }
-    }*/
+    }
     std::cout<<"Recherche des connexes" <<std::endl;
     std::unordered_set<Sommet*> sommetAjoute;
 
     for(unsigned int i=0;i<tableauDesPossibles.size();i++) // Pour chaque possibilite
     {
-        sommetAjoute.clear();
         for(unsigned int j=0;j<tableauDesPossibles[i].size();j++) // Pour chaque arete
         {
-            if ((int)tableauDesPossibles[i][j] == 1) // Si l'arete est selectionnee
+            if((int)tableauDesPossibles[i][j] == 1) // Si l'arete est selectionnee
             {
-                if(sommetAjoute.find(m_aretes[j]->getS1()) == sommetAjoute.end())
-                {
-                    sommetAjoute.insert(m_aretes[j]->getS1()); // On marque les sommets aux extremites de l'arete
-                }
-                if(sommetAjoute.find(m_aretes[j]->getS2()) == sommetAjoute.end())
-                {
-                    sommetAjoute.insert(m_aretes[j]->getS2()); // On marque les sommets aux extremites de l'arete
-                }
+                m_aretes[j]->ajouter();
             }
         }
 
@@ -278,9 +299,23 @@ void Graphe::palero()
         {
             std::cout << int(tableauDesPossibles[i][j]);
         }
-    }
+    }*/
 
     std::cout << "Nombre de possibilites connexes : "<<tableauDesPossibles.size() <<std::endl;
 
+}
+
+bool Graphe::DFSM() //DFS Marque
+{
+    Sommet*s0 = m_sommets[0];
+    int nbSommetM = 0;
+    for(auto s : m_sommets) // Compte les sommet marque
+    {
+        if(s.second->isAjoute())
+        {
+            nbSommetM++;
+        }
+    }
+    return s0->DFSM(nbSommetM);
 }
 

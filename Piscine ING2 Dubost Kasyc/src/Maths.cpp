@@ -117,11 +117,11 @@ std::vector<unsigned int> maths::decalage(std::vector<unsigned int> position, in
     }
     else if (nbADecaler-1 < 0)
     {
-        for (unsigned int i =0; i< position.size(); i++)
-        {
-            position[i] = position.size()-1-i;
-        }
-        return position;
+
+        std::vector<unsigned int> tmp;
+        tmp.push_back(-1);
+        std::cout << "ON ARRETE!" << tmp.size();
+        return tmp;
     }
     else
     {
@@ -131,34 +131,28 @@ std::vector<unsigned int> maths::decalage(std::vector<unsigned int> position, in
     }
 }
 
-std::vector<std::vector<char>> maths::compteur_etat_possibles(int nb_sommet, int nb_arete)
+std::vector<std::vector<char>> maths::compteur_etat_possibles(int nb_sommet, int nb_arete, Graphe* g)
 {
     std::vector<std::vector<char>> retour;
-
     std::vector<unsigned int> position;
 
+    //Creation du binaire de base
     for (int i=0; i<nb_sommet; i++)
     {
         position.push_back(nb_arete-1 -i);
-    }
-
-    {
-        std::vector<char> binaire;
-        for (int i = 0; i< nb_arete; i++)
-        {
-            binaire.push_back(0);
-        }
-        for (unsigned int j=0; j< position.size(); j++)
-        {
-            binaire[position[j]] = 1;
-        }
-        retour.push_back(binaire);
     }
 
 
     for(int i=1;; i++)
     {
         position = maths::decalage(position, nb_sommet-1);
+
+        if (position.size() == 1 && position[0] == -1)
+        {
+            std::cout << "BREAK" << std::endl;
+            break;
+        }
+
 
         /// Creation du binaire
         std::vector<char> binaire;
@@ -170,21 +164,28 @@ std::vector<std::vector<char>> maths::compteur_etat_possibles(int nb_sommet, int
         {
             binaire[position[j]] = 1;
         }
-        retour.push_back(binaire);
 
-        bool fin = true;
-        for (int j=0; j< nb_arete; ++j)
+
+
+        for(unsigned int h=0; h<binaire.size(); h++)
         {
-            if (retour[i][j] != retour[i-1][j])
+            if(binaire[h] == 1)
             {
-                fin = false;
+                g->getAretes()[h]->ajouter();
+            }
+            else
+            {
+                g->getAretes()[h]->retirer();
             }
         }
-        if (fin)
+        if (g->DFSM())
         {
-            retour.pop_back();
-            break;
+            retour.push_back(binaire);
+            //continue;
         }
+
+        /// Calcul poids
+
 
     }
 

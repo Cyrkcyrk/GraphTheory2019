@@ -1,4 +1,6 @@
 #include "sommet.h"
+#include <stack>
+#include <iostream>
 
 Sommet::Sommet(int id, double x, double y)
     : m_id(id), m_coord(Coord(x, y)),m_ajoute(false)
@@ -57,4 +59,66 @@ std::pair<Arete*, Sommet*> Sommet::getProcheVoisin(int critere)
         }
     }
     return {a1,s1};
+}
+
+std::unordered_set<const Sommet*> Sommet::rechercherCC(std::unordered_set<const Sommet*> cc) const{
+    std::unordered_set<const Sommet*> tempUnSet;
+    if (cc.find(this) == cc.end())
+    {
+        cc.insert(this);
+        for(auto voisin : m_voisins)
+        {
+            tempUnSet = voisin->rechercherCC(cc);
+            for(auto temp : tempUnSet)
+            {
+                cc.insert(temp);
+            }
+        }
+    }
+
+    return cc;
+}
+
+bool Sommet::DFSM(unsigned int nbSommets) const
+{
+    std::unordered_set<const Sommet*> decouverts;
+    std::stack<const Sommet*> pile;
+
+    pile.push(this);
+    const Sommet* Ec;
+    while (!pile.empty())
+    {
+        Ec = pile.top();
+        pile.pop();
+        for(const Sommet* s : Ec->getVoisins())
+        {
+            if(Ec->getArete(s)!=NULL && Ec->getArete(s)->isAjoute() && decouverts.find(s) == decouverts.end())
+            {
+                pile.push(s);
+            }
+        }
+
+        decouverts.insert(Ec);
+    }
+
+    if(decouverts.size() == nbSommets)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+Arete* Sommet::getArete(const Sommet* s) const
+{
+    for(auto arete : m_aretes)
+    {
+        if(arete->getS1() == s || arete->getS2() == s)
+        {
+            return arete;
+        }
+    }
+    return NULL;
 }
