@@ -136,6 +136,8 @@ std::vector<std::vector<char>>* maths::compteur_etat_possibles(int nb_sommet, in
     std::vector<std::vector<char>>* retour = new std::vector<std::vector<char>>;
     std::vector<unsigned int> position;
 
+    Graphe pareto;
+
     //Creation du binaire de base
     for (int i=0; i<nb_sommet; i++)
     {
@@ -185,6 +187,7 @@ std::vector<std::vector<char>>* maths::compteur_etat_possibles(int nb_sommet, in
         std::tie(connexe, poidsCrit1, poidsCrit2) = g->DFSM();
         if(connexe)
         {
+            pareto.addSommet(retour->size(), poidsCrit1*3, poidsCrit2*3);
             retour->push_back(binaire);
         }
     }
@@ -207,5 +210,9 @@ std::vector<std::vector<char>>* maths::compteur_etat_possibles(int nb_sommet, in
         retour.push_back(binaire);
     }
     */
+
+    Svgfile SVGPareto;
+    pareto.afficherGraphe(SVGPareto);
+
     return retour;
 }

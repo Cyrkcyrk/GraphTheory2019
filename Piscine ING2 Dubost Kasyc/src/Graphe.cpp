@@ -9,6 +9,11 @@
 #include "maths.h"
 #include <unordered_set>
 
+
+Graphe::Graphe()
+{
+}
+
 Graphe::Graphe(std::string nomFichierSommet, std::string nomFichierArete)
 {
     lireSommet(nomFichierSommet);
@@ -67,7 +72,7 @@ void Graphe::afficherGraphe(Svgfile& svgout)
 
 
         svgout.addCircle(tmp.getX(), tmp.getY(), POINT_RAYON, POINT_COULEUR);
-        svgout.addText(tmp.getX(), tmp.getY()+POINT_RAYON/2, std::to_string(s.second->getId()), POINT_TEXT);
+        //svgout.addText(tmp.getX(), tmp.getY()+POINT_RAYON/2, std::to_string(s.second->getId()), POINT_TEXT);
     }
 
 

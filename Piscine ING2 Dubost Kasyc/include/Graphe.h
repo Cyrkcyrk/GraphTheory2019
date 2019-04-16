@@ -10,6 +10,7 @@
 class Graphe
 {
     public:
+        Graphe();
         Graphe(std::string nomFichierSommet, std::string nomFichierArete);
         Graphe(std::vector<Sommet*> sommets, std::vector<Arete*> aretes);
         virtual ~Graphe();
