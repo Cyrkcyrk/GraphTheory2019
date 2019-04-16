@@ -308,7 +308,7 @@ void Graphe::pareto()
 
 }
 
-bool Graphe::DFSM() //DFS Marque
+std::tuple<bool,int,int> Graphe::DFSM() //DFS Marque
 {
     Sommet*s0 = m_sommets[0];
     int nbSommetM = 0;

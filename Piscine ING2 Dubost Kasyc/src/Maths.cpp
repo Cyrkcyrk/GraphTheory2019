@@ -179,7 +179,11 @@ std::vector<std::vector<char>>* maths::compteur_etat_possibles(int nb_sommet, in
                 g->getAretes()[h]->retirer();
             }
         }
-        if (g->DFSM())
+        bool connexe;
+        int poidsCrit1;
+        int poidsCrit2;
+        std::tie(connexe, poidsCrit1, poidsCrit2) = g->DFSM();
+        if(connexe)
         {
             retour->push_back(binaire);
         }

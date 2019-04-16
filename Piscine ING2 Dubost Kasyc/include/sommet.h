@@ -26,7 +26,7 @@ class Sommet
         Arete* getArete(const Sommet* s2)const;
 
         std::unordered_set<const Sommet*> rechercherCC(std::unordered_set<const Sommet*> cc) const;
-        bool DFSM(unsigned int nbSommets) const;
+        std::tuple<bool,int,int> DFSM(unsigned int nbSommets) const;
     private:
         int m_id;
         Coord m_coord;
