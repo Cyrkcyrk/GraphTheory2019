@@ -2,8 +2,8 @@
 #include <stack>
 #include <iostream>
 
-Sommet::Sommet(int id, double x, double y)
-    : m_id(id), m_coord(Coord(x, y)),m_ajoute(false)
+Sommet::Sommet(int id, double x, double y, bool optimum)
+    : m_id(id), m_coord(Coord(x, y)),m_ajoute(false), m_optimum(optimum)
 {
 
 }
@@ -79,7 +79,7 @@ std::unordered_set<const Sommet*> Sommet::rechercherCC(std::unordered_set<const 
     return cc;
 }
 
-std::tuple<bool,int,int> Sommet::DFSM(unsigned int nbSommets) const
+std::pair<bool,std::vector<int>> Sommet::DFSM(unsigned int nbSommets) const
 {
     std::unordered_set<const Sommet*> decouverts;
     std::stack<const Sommet*> pile;
@@ -109,11 +109,11 @@ std::tuple<bool,int,int> Sommet::DFSM(unsigned int nbSommets) const
 
     if(decouverts.size() == nbSommets)
     {
-        return std::make_tuple(true,poidsChemin[0],poidsChemin[1]);
+        return std::make_pair(true,poidsChemin);
     }
     else
     {
-        return std::make_tuple(false,poidsChemin[0],poidsChemin[1]);
+        return std::make_pair(false,poidsChemin);
     }
 }
 

@@ -27,7 +27,7 @@ class Graphe
         unsigned int getTaille() const {return m_aretes.size();};
         unsigned int getOrdre() const {return m_sommets.size();};
 
-        void addSommet(int id, double X, double Y);
+        void addSommet(int id, double X, double Y, bool optimum = false);
 
         int rechercher_afficherToutesCC();
         void pareto();
@@ -36,7 +36,7 @@ class Graphe
         std::unordered_map<int,Arete*> getAretes(){return m_aretes;};
         std::unordered_map<int,Sommet*> getSommets(){return m_sommets;};
 
-        std::tuple<bool,int,int> DFSM();
+        std::pair<bool,std::vector<int>> DFSM();
 
     private:
         int m_NbrCritere;

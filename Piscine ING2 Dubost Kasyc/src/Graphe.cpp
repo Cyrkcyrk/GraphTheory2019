@@ -8,7 +8,7 @@
 #include <math.h>
 #include "maths.h"
 #include <unordered_set>
-
+#include <algorithm>
 
 Graphe::Graphe()
 {
@@ -70,8 +70,19 @@ void Graphe::afficherGraphe(Svgfile& svgout)
         Coord tmp = s.second->getCoord();
 
 
+        if(s.second->isOptimum())
+        {
+            /*std::stringstream stream;
+            stream << std::fixed << std::setprecision(1);
+            stream << s.second->getCoord().getX();
+            stream << "___";
+            stream << s.second->getCoord().getY();
 
-        svgout.addCircle(tmp.getX(), tmp.getY(), POINT_RAYON, POINT_COULEUR);
+            svgout.addText(tmp.getX(), tmp.getY(), stream.str(), "rgb(50, 50, 50)");
+            */
+            svgout.addCircle(tmp.getX(), tmp.getY(), POINT_RAYON, POINT_COULEUR_OPTIMUM);
+        }
+        else svgout.addCircle(tmp.getX(), tmp.getY(), POINT_RAYON, POINT_COULEUR);
         //svgout.addText(tmp.getX(), tmp.getY()+POINT_RAYON/2, std::to_string(s.second->getId()), POINT_TEXT);
     }
 
@@ -262,6 +273,10 @@ int Graphe::rechercher_afficherToutesCC()
     return i;
 }
 
+bool sortCritere(std::pair<std::vector<char>,std::vector<int>>& a, std::pair<std::vector<char>,std::vector<int>>& b)
+{
+    return (a.second[0] < b.second[0]);
+}
 
 void Graphe::pareto()
 {
@@ -269,11 +284,34 @@ void Graphe::pareto()
 
     std:: cout << "Sommet : " << m_sommets.size() << " - Arrete : " << m_aretes.size() << std::endl;
 
-    std::vector<std::vector<char>>* tableauDesPossibles = maths::compteur_etat_possibles(m_sommets.size()-1,m_aretes.size(),this); // Tableau des possibles
+    std::vector<std::pair<std::vector<char>,std::vector<int>>> tableauDesPossibles = maths::compteur_etat_possibles(m_sommets.size()-1,m_aretes.size(),this); // Tableau des possibles
 
-    std::cout <<"Nbr possibilites : "<< tableauDesPossibles->size() << std::endl;
+    std::cout <<"Nbr possibilites : "<< tableauDesPossibles.size() << std::endl;
 
-    delete(tableauDesPossibles);
+    Graphe pareto;
+
+    std::sort(tableauDesPossibles.begin(), tableauDesPossibles.end(),sortCritere);
+
+    double maxY = tableauDesPossibles[tableauDesPossibles.size()-1].second[1];
+
+    pareto.addSommet(tableauDesPossibles.size()-1, tableauDesPossibles[tableauDesPossibles.size()-1].second[0]*3, tableauDesPossibles[tableauDesPossibles.size()-1].second[1]*3,true);
+
+    for(int i=tableauDesPossibles.size()-1;i>=0;i--)
+    {
+        if(tableauDesPossibles[i].second[1]>maxY)
+        {
+            maxY = tableauDesPossibles[i].second[1];
+            pareto.addSommet(i, tableauDesPossibles[i].second[0]*3, tableauDesPossibles[i].second[1]*3,true);
+        }
+        else
+        {
+            pareto.addSommet(i, tableauDesPossibles[i].second[0]*3, tableauDesPossibles[i].second[1]*3);
+        }
+    }
+    Svgfile SVGPareto;
+    pareto.afficherGraphe(SVGPareto);
+
+    //delete(tableauDesPossibles);
 /*
     for (int i = 0; i< tableauDesPossibles.size(); i++)
     {
@@ -313,7 +351,7 @@ void Graphe::pareto()
 
 }
 
-std::tuple<bool,int,int> Graphe::DFSM() //DFS Marque
+std::pair<bool,std::vector<int>> Graphe::DFSM() //DFS Marque
 {
     Sommet*s0 = m_sommets[0];
     int nbSommetM = 0;
@@ -328,7 +366,7 @@ std::tuple<bool,int,int> Graphe::DFSM() //DFS Marque
 }
 
 
-void Graphe::addSommet(int id, double X, double Y)
+void Graphe::addSommet(int id, double X, double Y, bool optimum)
 {
-    m_sommets.insert({id, new Sommet(id, X, Y)});
+    m_sommets.insert({id, new Sommet(id, X, Y, optimum)});
 }
