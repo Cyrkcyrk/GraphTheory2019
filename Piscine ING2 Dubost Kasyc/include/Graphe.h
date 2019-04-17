@@ -17,7 +17,8 @@ class Graphe
 
         void lireSommet(std::string nomFichierSommet);
         void lireArete(std::string nomFichierArete);
-        void afficherGraphe(Svgfile& svgout);
+        void dessinerGraphe(Svgfile& svgout);
+        void dessinerPareto(Svgfile& svgout);
 
         void compteurBinaire();
 

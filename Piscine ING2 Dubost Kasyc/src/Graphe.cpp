@@ -38,52 +38,49 @@ Graphe::~Graphe()
     //dtor
 }
 
-void Graphe::afficherGraphe(Svgfile& svgout)
+void Graphe::dessinerGraphe(Svgfile& svgout)
 {
     for(auto a : m_aretes)
     {
-        std::stringstream stream;
-        stream << std::fixed << std::setprecision(1);
-        for (unsigned int i = 0; i< a.second->getPoids().size(); ++i)
-        {
-            stream << a.second->getPoids()[i];
-
-            if (i < a.second->getPoids().size()-1)
-            {
-                stream << "___";
-            }
-        }
-
-
-        std::vector<Coord> tmp = a.second->getCoord();
-        svgout.addLine(tmp[0].getX(), tmp[0].getY(), tmp[1].getX(), tmp[1].getY(), TRAIT_EPAISSEUR, TRAIT_COULEUR);
-
-        Coord milieu = Coord((tmp[0].getX() + tmp[1].getX())/2, (tmp[0].getY() + tmp[1].getY())/2);
-        svgout.addText(milieu.getX(), milieu.getY(), stream.str(), "rgb(50, 50, 50)");
-
+        a.second->dessiner(svgout, true);
     }
+
     for(auto s : m_sommets)
     {
-        Coord tmp = s.second->getCoord();
+        s.second->dessiner(svgout, 1, true);
+    }
+}
 
+void Graphe::dessinerPareto(Svgfile& svgout)
+{
+    std::vector<Sommet*> frontiere;
 
+    for(auto s : m_sommets)
+    {
         if(s.second->isOptimum())
         {
-            svgout.addCircle(tmp.getX()*3, tmp.getY()*3, POINT_RAYON, POINT_COULEUR_OPTIMUM);
-            std::stringstream stream;
-            stream << std::fixed << std::setprecision(1);
-            stream << s.second->getCoord().getX();
-            stream << "  ";
-            stream << s.second->getCoord().getY();
-
-            svgout.addText(tmp.getX()*3, tmp.getY()*3, stream.str(), "rgb(50, 50, 50)");
+            frontiere.push_back(s.second);
         }
-        else svgout.addCircle(tmp.getX()*3, tmp.getY()*3, POINT_RAYON, POINT_COULEUR);
-        //svgout.addText(tmp.getX(), tmp.getY()+POINT_RAYON/2, std::to_string(s.second->getId()), POINT_TEXT);
+        else
+        {
+            s.second->dessiner(svgout, 6, false, POINT_PARETO_RAYON, POINT_COULEUR, 0.1);
+        }
     }
 
+    for(auto s : frontiere)
+    {
+        svgout.addCircle(s->getCoord().getX()*6, s->getCoord().getY()*6, POINT_PARETO_RAYON, POINT_PARETO_COULEUR_OPTIMUM);
 
+        std::stringstream stream;
+        stream << std::fixed << std::setprecision(1)
+               << s->getCoord().getX()
+               << " / "
+               << s->getCoord().getY();
+
+        svgout.addText(s->getCoord().getX()*6, s->getCoord().getY()*6, stream.str(), "rgb(50, 50, 50)");
+    }
 }
+
 
 void Graphe::lireSommet(std::string nomFichier)
 {
@@ -300,6 +297,8 @@ void Graphe::pareto()
     std::cout<<"Fin du tri"<<std::endl;
     std::cout << tableauDesPossibles[tableauDesPossibles.size()-1].second[0] << " ";
     std::cout << tableauDesPossibles[tableauDesPossibles.size()-1].second[1] << std::endl;
+
+
     double maxY = tableauDesPossibles[0].second[1];
     std::vector<int> xOptim;
     xOptim.push_back(tableauDesPossibles[0].second[0]);
@@ -335,6 +334,8 @@ void Graphe::pareto()
     }
 
     int poids2 = 0;
+    std::cout << "Liste des poids A CORRIGER CAR PREND EN COMPTE LE POIDS[0]" <<std::endl;
+    std::cout << std::endl;
     for(auto p : tableauDesPossibles) // Pour chaque possibilite
     {
         for(unsigned int i=0;i<m_aretes.size();i++) // Pour chaque sommet
@@ -353,7 +354,7 @@ void Graphe::pareto()
     }
 
     Svgfile SVGPareto;
-    pareto.afficherGraphe(SVGPareto);
+    pareto.dessinerPareto(SVGPareto);
 
     //delete(tableauDesPossibles);
 /*

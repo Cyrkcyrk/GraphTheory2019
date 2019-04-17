@@ -2,6 +2,7 @@
 #include <stack>
 #include <iostream>
 
+
 Sommet::Sommet(int id, double x, double y, bool optimum)
     : m_id(id), m_coord(Coord(x, y)),m_ajoute(false), m_optimum(optimum), m_distance{100000}
 {
@@ -154,3 +155,12 @@ Sommet* Sommet::getPlusProcheVoisin()
     return s;
 }
 
+
+void Sommet::dessiner(Svgfile& svgout, double coef, bool afficher_texte, double rayon, std::string couleur, double opacity)
+{
+    svgout.addCircle(m_coord.getX()*coef, m_coord.getY()*coef, rayon, couleur, opacity);
+    if (afficher_texte)
+    {
+        svgout.addText(m_coord.getX()*coef, m_coord.getY()*coef+rayon/2, std::to_string(m_id), POINT_TEXT, 9, true);
+    }
+}
