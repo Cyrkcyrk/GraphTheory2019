@@ -103,10 +103,8 @@ std::pair<bool,std::vector<int>> Sommet::DFSM(unsigned int nbSommets) const
                 pile.push(s);
             }
         }
-
         decouverts.insert(Ec);
     }
-
     if(decouverts.size() == nbSommets)
     {
         return std::make_pair(true,poidsChemin);

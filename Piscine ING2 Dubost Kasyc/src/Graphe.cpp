@@ -61,28 +61,23 @@ void Graphe::afficherGraphe(Svgfile& svgout)
         svgout.addText(milieu.getX(), milieu.getY(), stream.str(), "rgb(50, 50, 50)");
 
     }
-    std::cout<<std::endl;
     for(auto s : m_sommets)
     {
-
-        std::cout << s.second->getId() << " ";
-
         Coord tmp = s.second->getCoord();
 
 
         if(s.second->isOptimum())
         {
-            /*std::stringstream stream;
+            svgout.addCircle(tmp.getX()*3, tmp.getY()*3, POINT_RAYON, POINT_COULEUR_OPTIMUM);
+            std::stringstream stream;
             stream << std::fixed << std::setprecision(1);
             stream << s.second->getCoord().getX();
-            stream << "___";
+            stream << "  ";
             stream << s.second->getCoord().getY();
 
-            svgout.addText(tmp.getX(), tmp.getY(), stream.str(), "rgb(50, 50, 50)");
-            */
-            svgout.addCircle(tmp.getX(), tmp.getY(), POINT_RAYON, POINT_COULEUR_OPTIMUM);
+            svgout.addText(tmp.getX()*3, tmp.getY()*3, stream.str(), "rgb(50, 50, 50)");
         }
-        else svgout.addCircle(tmp.getX(), tmp.getY(), POINT_RAYON, POINT_COULEUR);
+        else svgout.addCircle(tmp.getX()*3, tmp.getY()*3, POINT_RAYON, POINT_COULEUR);
         //svgout.addText(tmp.getX(), tmp.getY()+POINT_RAYON/2, std::to_string(s.second->getId()), POINT_TEXT);
     }
 
@@ -275,7 +270,15 @@ int Graphe::rechercher_afficherToutesCC()
 
 bool sortCritere(std::pair<std::vector<char>,std::vector<int>>& a, std::pair<std::vector<char>,std::vector<int>>& b)
 {
-    return (a.second[0] < b.second[0]);
+    if (a.second[0] < b.second[0])
+    {
+        return true;
+    }
+    else if(a.second[0] == b.second[0])
+    {
+        return a.second[1] < b.second[1];
+    }
+    else return false;
 }
 
 void Graphe::pareto()
@@ -284,28 +287,51 @@ void Graphe::pareto()
 
     std:: cout << "Sommet : " << m_sommets.size() << " - Arrete : " << m_aretes.size() << std::endl;
 
+
     std::vector<std::pair<std::vector<char>,std::vector<int>>> tableauDesPossibles = maths::compteur_etat_possibles(m_sommets.size()-1,m_aretes.size(),this); // Tableau des possibles
 
     std::cout <<"Nbr possibilites : "<< tableauDesPossibles.size() << std::endl;
 
     Graphe pareto;
 
+    std::cout<<"Sorting..."<<std::endl;
     std::sort(tableauDesPossibles.begin(), tableauDesPossibles.end(),sortCritere);
-
-    double maxY = tableauDesPossibles[tableauDesPossibles.size()-1].second[1];
-
-    pareto.addSommet(tableauDesPossibles.size()-1, tableauDesPossibles[tableauDesPossibles.size()-1].second[0]*3, tableauDesPossibles[tableauDesPossibles.size()-1].second[1]*3,true);
-
-    for(int i=tableauDesPossibles.size()-1;i>=0;i--)
+    std::cout<<"Fin du tri"<<std::endl;
+    std::cout << tableauDesPossibles[tableauDesPossibles.size()-1].second[0] << " ";
+    std::cout << tableauDesPossibles[tableauDesPossibles.size()-1].second[1] << std::endl;
+    double maxY = tableauDesPossibles[0].second[1];
+    std::vector<int> xOptim;
+    xOptim.push_back(tableauDesPossibles[0].second[0]);
+    pareto.addSommet(0, tableauDesPossibles[0].second[0], tableauDesPossibles[0].second[1],true);
+    std::cout << xOptim[0];
+    for(unsigned int i=1;i<tableauDesPossibles.size()-1;i++)
     {
-        if(tableauDesPossibles[i].second[1]>maxY)
+        if(tableauDesPossibles[i].second[1]<maxY)
         {
-            maxY = tableauDesPossibles[i].second[1];
-            pareto.addSommet(i, tableauDesPossibles[i].second[0]*3, tableauDesPossibles[i].second[1]*3,true);
+            std::cout<<"memex";
+            bool memeX = false;
+            for(auto x : xOptim)
+            {
+                if(x==tableauDesPossibles[i].second[0])
+                {
+                    memeX = true;
+                }
+            }
+            if(!memeX)
+            {
+                xOptim.push_back(tableauDesPossibles[i].second[0]);
+                maxY = tableauDesPossibles[i].second[1];
+                pareto.addSommet(i, tableauDesPossibles[i].second[0], tableauDesPossibles[i].second[1],true);
+            }
+            else
+            {
+                std::cout<<"memex";
+                pareto.addSommet(i, tableauDesPossibles[i].second[0], tableauDesPossibles[i].second[1]);
+            }
         }
         else
         {
-            pareto.addSommet(i, tableauDesPossibles[i].second[0]*3, tableauDesPossibles[i].second[1]*3);
+            pareto.addSommet(i, tableauDesPossibles[i].second[0], tableauDesPossibles[i].second[1]);
         }
     }
     Svgfile SVGPareto;

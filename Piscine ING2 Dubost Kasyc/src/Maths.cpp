@@ -180,12 +180,16 @@ std::vector<std::pair<std::vector<char>,std::vector<int>>> maths::compteur_etat_
             }
         }
         std::pair<bool,std::vector<int>> connexe = g->DFSM();
+
         if(connexe.first)
         {
             retour.push_back(std::make_pair(binaire,connexe.second));
         }
     }
-
+    for(int i=0;i<retour.size();i++)
+    {
+        if(retour[i].second[0] < 0)retour.erase(retour.begin()+i);
+    }
     /*
     for (int i =0; i < maths::nCr(nb_sommet, nb_arete); i++)
     {

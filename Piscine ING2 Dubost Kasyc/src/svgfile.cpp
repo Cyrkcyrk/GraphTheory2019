@@ -112,7 +112,7 @@ void Svgfile::addText(double x, double y, std::string text, std::string color)
             << attrib("x", x)
             << attrib("y", y)
             << attrib("fill", color)
-            << attrib("font-size", 9)
+            << attrib("font-size", 3)
             << attrib("alignment-baseline", "middle")
             << attrib("text-anchor", "middle")
             << ">" << text << "</text>\n";
