@@ -9,6 +9,7 @@
 #include "maths.h"
 #include <unordered_set>
 #include <algorithm>
+#include <queue>
 
 Graphe::Graphe()
 {
@@ -308,7 +309,6 @@ void Graphe::pareto()
     {
         if(tableauDesPossibles[i].second[1]<maxY)
         {
-            std::cout<<"memex";
             bool memeX = false;
             for(auto x : xOptim)
             {
@@ -325,7 +325,6 @@ void Graphe::pareto()
             }
             else
             {
-                std::cout<<"memex";
                 pareto.addSommet(i, tableauDesPossibles[i].second[0], tableauDesPossibles[i].second[1]);
             }
         }
@@ -334,6 +333,25 @@ void Graphe::pareto()
             pareto.addSommet(i, tableauDesPossibles[i].second[0], tableauDesPossibles[i].second[1]);
         }
     }
+
+    int poids2 = 0;
+    for(auto p : tableauDesPossibles) // Pour chaque possibilite
+    {
+        for(unsigned int i=0;i<m_aretes.size();i++) // Pour chaque sommet
+        {
+            if(p.first[i] == 1) // Ajoute ou non l'arete
+            {
+                m_aretes[i]->ajouter();
+            }
+            else m_aretes[i]->retirer();
+        }
+        for(auto s : m_sommets)
+        {
+            poids2 += this->algoDijkstra(s.second->getId());
+        }
+        std::cout << poids2 << "  ";
+    }
+
     Svgfile SVGPareto;
     pareto.afficherGraphe(SVGPareto);
 
@@ -396,3 +414,78 @@ void Graphe::addSommet(int id, double X, double Y, bool optimum)
 {
     m_sommets.insert({id, new Sommet(id, X, Y, optimum)});
 }
+
+
+
+bool triAretesCroissantes(Arete* a1, Arete* a2)
+{
+    return a1->getPoids() > a2->getPoids();
+}
+
+int Graphe::algoDijkstra(int depart)
+{
+    for(auto s : m_sommets) // Trie toutes les aretes dans les sommets par ordre croissant
+    {
+        std::sort(s.second->getAretes()->begin(), s.second->getAretes()->end(),triAretesCroissantes);
+    }
+
+    auto cmp = [](Sommet* s1, Sommet* s2)
+    {
+        return s1->getD()+s1->getDistancePlusProcheVoisin() > s2->getD()+s2->getDistancePlusProcheVoisin();
+    };
+    std::priority_queue<Sommet*, std::vector<Sommet*>, decltype(cmp)> myqueue(cmp);
+
+    std::unordered_map<Sommet*,int> dist;
+    std::unordered_set<Sommet*> decouverts;
+
+    for(auto s : m_sommets)
+    {
+         if(s.second == m_sommets.at(depart))
+         {
+             dist.insert({s.second, 0});
+             s.second->setDistance(0);
+         }
+         else
+         {
+             dist.insert({s.second, 100000});
+             s.second->setDistance(100000);
+         }
+    }
+
+    myqueue.push(m_sommets.at(depart));
+    Sommet* s;
+
+    while(!myqueue.empty())
+    {
+        s = myqueue.top();
+
+        if(decouverts.find(myqueue.top())==decouverts.end())
+        {
+            decouverts.insert(myqueue.top());
+        }
+        myqueue.pop();
+        //std::cout <<s->getId()<< " : " ;
+        for(auto voisin : s->getVoisins())
+        {
+            if (decouverts.find(voisin) == decouverts.end() && s->getArete(voisin)->isAjoute())
+            {
+                myqueue.push(voisin);
+                //std::cout<<myqueue.top()->getId()<<" ";
+                if(dist.at(s)+s->getArete(voisin)->getPoids()[0]<dist.at(voisin))
+                {
+                    //std::cout << "Ajouter " << voisin->getId() << " depuis " << s->getId() << " coute "<<dist.at(s)+s->getArete(voisin)->getPoids()[0]<<std::endl;
+                    dist.at(voisin) = dist.at(s)+s->getArete(voisin)->getPoids()[0];
+                    voisin->setDistance(dist.at(s)+s->getArete(voisin)->getPoids()[0]);
+                }
+            }
+
+        }
+    }
+    int somme = 0;
+    for(auto a : dist)
+    {
+        somme+=a.second;
+    }
+    return somme;
+}
+

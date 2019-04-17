@@ -23,19 +23,24 @@ class Sommet
 
         Coord getCoord() const {return m_coord;};
         std::pair<Arete*, Sommet*> getProcheVoisin(int critere);
-        std::vector<const Sommet*> getVoisins()const{return m_voisins;};
+        std::vector<Sommet*> getVoisins(){return m_voisins;};
         Arete* getArete(const Sommet* s2)const;
+        std::vector<Arete*>* getAretes(){return &m_aretes;};
+        Sommet* getPlusProcheVoisin();
+        int getDistancePlusProcheVoisin();
+        int getD()const{return m_distance;};
+        void setDistance(int d){m_distance = d;};
 
         std::unordered_set<const Sommet*> rechercherCC(std::unordered_set<const Sommet*> cc) const;
-        std::pair<bool,std::vector<int>> DFSM(unsigned int nbSommets) const;
+        std::pair<bool,std::vector<int>> DFSM(unsigned int nbSommets);
     private:
         int m_id;
         Coord m_coord;
-        std::vector<const Sommet*> m_voisins;
+        std::vector<Sommet*> m_voisins;
         std::vector<Arete*> m_aretes;
         bool m_ajoute;
         bool m_optimum;
-
+        unsigned int m_distance;
 };
 
 #endif // SOMMET_H

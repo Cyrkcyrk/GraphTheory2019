@@ -3,7 +3,7 @@
 #include <iostream>
 
 Sommet::Sommet(int id, double x, double y, bool optimum)
-    : m_id(id), m_coord(Coord(x, y)),m_ajoute(false), m_optimum(optimum)
+    : m_id(id), m_coord(Coord(x, y)),m_ajoute(false), m_optimum(optimum), m_distance{100000}
 {
 
 }
@@ -79,22 +79,22 @@ std::unordered_set<const Sommet*> Sommet::rechercherCC(std::unordered_set<const 
     return cc;
 }
 
-std::pair<bool,std::vector<int>> Sommet::DFSM(unsigned int nbSommets) const
+std::pair<bool,std::vector<int>> Sommet::DFSM(unsigned int nbSommets)
 {
-    std::unordered_set<const Sommet*> decouverts;
-    std::stack<const Sommet*> pile;
+    std::unordered_set<Sommet*> decouverts;
+    std::stack<Sommet*> pile;
 
     std::vector<int> poidsChemin;
     poidsChemin.push_back(0);
     poidsChemin.push_back(0);
 
     pile.push(this);
-    const Sommet* Ec;
+    Sommet* Ec;
     while (!pile.empty())
     {
         Ec = pile.top();
         pile.pop();
-        for(const Sommet* s : Ec->getVoisins())
+        for(Sommet* s : Ec->getVoisins())
         {
             if(Ec->getArete(s)!=NULL && Ec->getArete(s)->isAjoute() && decouverts.find(s) == decouverts.end())
             {
@@ -126,3 +126,31 @@ Arete* Sommet::getArete(const Sommet* s) const
     }
     return NULL;
 }
+
+
+int Sommet::getDistancePlusProcheVoisin()
+{
+    for(auto aretes :m_aretes)
+    {
+        if(aretes->getAutreSommet(this) == this->getPlusProcheVoisin())
+        {
+            return aretes->getPoids()[0];
+        }
+    }
+}
+
+Sommet* Sommet::getPlusProcheVoisin()
+{
+    int d = 1000000;
+    Sommet* s = nullptr;
+    for(auto arete : m_aretes)
+    {
+        if(arete->getPoids()[0] < d)
+        {
+            d = arete->getPoids()[0];
+            s = arete->getAutreSommet(this);
+        }
+    }
+    return s;
+}
+

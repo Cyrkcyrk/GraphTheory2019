@@ -28,6 +28,5 @@ int main()
 
     g.pareto();
 
-
     return 0;
 }

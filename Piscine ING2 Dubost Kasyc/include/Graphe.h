@@ -38,6 +38,9 @@ class Graphe
 
         std::pair<bool,std::vector<int>> DFSM();
 
+
+        int algoDijkstra(int depart);
+
     private:
         int m_NbrCritere;
         std::unordered_map<int,Sommet*> m_sommets;
