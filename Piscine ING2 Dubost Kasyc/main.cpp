@@ -9,13 +9,13 @@
 int main()
 {
     //Graphe g("graphes/broadway.txt","graphes/broadway_weights_0.txt");
-    //Graphe g("graphes/cubetown.txt","graphes/cubetown_weights_0.txt");
-    Graphe g("graphes/manhattan.txt","graphes/manhattan_weights_0.txt");
+    Graphe g("graphes/cubetown.txt","graphes/cubetown_weights_0.txt");
+    //Graphe g("graphes/manhattan.txt","graphes/manhattan_weights_0.txt");
     //Graphe g("graphes/triville.txt","graphes/triville_weights_0.txt");
     {
         Svgfile svgout("Graphe.svg");
         svgout.addGrid(100, true, "rgb(200, 200, 200)");
-        g.afficherGraphe(svgout);
+        g.dessinerGraphe(svgout);
     }
 
     int depart = 1;
@@ -23,7 +23,7 @@ int main()
     {
         Svgfile svgout("prim_" + std::to_string(i) + ".svg");
         svgout.addGrid(100, true, "rgb(200, 200, 200)");
-        g.algoPrim(depart,i).afficherGraphe(svgout);
+        g.algoPrim(depart,i).dessinerGraphe(svgout);
     }
 
     g.pareto();

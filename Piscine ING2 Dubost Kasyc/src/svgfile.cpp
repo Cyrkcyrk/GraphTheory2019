@@ -14,15 +14,15 @@ const std::string svgEnding = "\n\n</svg>\n";
 
 std::set<std::string> Svgfile::s_openfiles;
 
-bool Svgfile::s_verbose = true;
+bool Svgfile::s_verbose = false;
 
 Svgfile::Svgfile(std::string _filename, int _width, int _height) :
     m_filename{_filename}, m_width{_width}, m_height{_height}
 {
 
     if (s_verbose)
-        //std::cout << "Opening SVG output file : "
-        //          << m_filename << std::endl;
+        std::cout << "Opening SVG output file : "
+                  << m_filename << std::endl;
 
     if ( s_openfiles.count(m_filename) )
         throw std::runtime_error( "File " + m_filename + " already open !" );
@@ -37,7 +37,7 @@ Svgfile::Svgfile(std::string _filename, int _width, int _height) :
     }
 
     if (s_verbose)
-        //std::cout << "OK" << std::endl;
+        std::cout << "OK" << std::endl;
 
     // Writing the header into the SVG file
     m_ostrm << svgHeader;
@@ -76,14 +76,14 @@ void Svgfile::addCircle(double x, double y, double r, double ep, std::string col
             << "/>\n";
 }
 
-void Svgfile::addCircle(double x, double y, double r, std::string colorFill)
+void Svgfile::addCircle(double x, double y, double r, std::string colorFill, double opacity)
 {
     m_ostrm << "<circle "
             << attrib("cx", x)
             << attrib("cy", y)
             << attrib("r",  r)
             << attrib("fill", colorFill)
-            << attrib("opacity", "1")
+            << attrib("opacity", opacity)
             << "/>\n";
 }
 
@@ -105,17 +105,21 @@ void Svgfile::addCross(double x, double y, double span, std::string color)
     addLine(x-span, y+span, x+span, y-span, 1,  color);
 }
 
-void Svgfile::addText(double x, double y, std::string text, std::string color)
+void Svgfile::addText(double x, double y, std::string text, std::string color, double font_size, bool center)
 {
     /// <text x="180" y="60">Un texte</text>
     m_ostrm << "<text "
             << attrib("x", x)
             << attrib("y", y)
             << attrib("fill", color)
-            << attrib("font-size", 3)
-            << attrib("alignment-baseline", "middle")
-            << attrib("text-anchor", "middle")
-            << ">" << text << "</text>\n";
+            << attrib("font-size", font_size);
+    if (center)
+    {
+        m_ostrm << attrib("alignment-baseline", "middle")
+                << attrib("text-anchor", "middle");
+    }
+
+    m_ostrm << ">" << text << "</text>\n";
 }
 
 

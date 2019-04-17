@@ -51,7 +51,6 @@ int maths::binToInt(std::vector<char>& bin)
     {
         rep += (bin[i]-'0')*pow(2,(bin.size()-1-i));
     }
-    std::cout << rep << std::endl;
     return rep;
 }
 
@@ -120,7 +119,6 @@ std::vector<unsigned int> maths::decalage(std::vector<unsigned int> position, in
 
         std::vector<unsigned int> tmp;
         tmp.push_back(-1);
-        std::cout << "ON ARRETE!" << tmp.size();
         return tmp;
     }
     else
@@ -145,12 +143,11 @@ std::vector<std::pair<std::vector<char>,std::vector<int>>> maths::compteur_etat_
     for(unsigned int i=1;; i++)
     {
         if (i%10000 == 0)
-            std::cout << i << std::endl;
+            std::cout << "iteration n " << i << std::endl;
         position = maths::decalage(position, nb_sommet-1);
 
         if (position.size() == 1 && position[0] == -1)
         {
-            std::cout << "BREAK" << std::endl;
             break;
         }
 

@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "Coord.h"
+#include "svgfile.h"
 
 class Sommet;
 
@@ -24,6 +25,8 @@ class Arete
         bool isAjoute()const{return m_marque;};
         void ajouter(){m_marque = true;};
         void retirer(){m_marque = false;};
+
+        void dessiner(Svgfile& svgout, bool afficher_poids = false);
 
     private:
         int m_id;
