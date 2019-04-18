@@ -135,7 +135,7 @@ int Sommet::getDistancePlusProcheVoisin()
     {
         if(aretes->getAutreSommet(this) == this->getPlusProcheVoisin())
         {
-            return aretes->getPoids()[0];
+            return aretes->getPoids()[1];
         }
     }
 }
@@ -146,9 +146,9 @@ Sommet* Sommet::getPlusProcheVoisin()
     Sommet* s = nullptr;
     for(auto arete : m_aretes)
     {
-        if(arete->getPoids()[0] < d)
+        if(arete->getPoids()[1] < d)
         {
-            d = arete->getPoids()[0];
+            d = arete->getPoids()[1];
             s = arete->getAutreSommet(this);
         }
     }

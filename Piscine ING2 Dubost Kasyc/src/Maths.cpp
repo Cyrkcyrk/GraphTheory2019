@@ -137,7 +137,7 @@ std::vector<std::pair<std::vector<char>,std::vector<int>>> maths::compteur_etat_
     //Creation du binaire de base
     for (int i=0; i<nb_sommet; i++)
     {
-        position.push_back(nb_arete-1 -i);
+        position.push_back(nb_arete-1-i);
     }
 
     for(unsigned int i=1;; i++)
@@ -157,25 +157,14 @@ std::vector<std::pair<std::vector<char>,std::vector<int>>> maths::compteur_etat_
         for (int j = 0; j< nb_arete; j++)
         {
             binaire.push_back(0);
+            g->getAretes()[j]->retirer();
         }
         for (unsigned int j=0; j< position.size(); j++)
         {
             binaire[position[j]] = 1;
+            g->getAretes()[position[j]]->ajouter();
         }
 
-
-
-        for(unsigned int h=0; h<binaire.size(); h++)
-        {
-            if(binaire[h] == 1)
-            {
-                g->getAretes()[h]->ajouter();
-            }
-            else
-            {
-                g->getAretes()[h]->retirer();
-            }
-        }
         std::pair<bool,std::vector<int>> connexe = g->DFSM();
 
         if(connexe.first)

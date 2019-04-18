@@ -4,10 +4,11 @@
 
 #include <iomanip>
 #include <sstream>
+#include <math.h>
 #include "conf.h"
 
 Arete::Arete(int id, Sommet* s1, Sommet* s2)
-    : m_id(id), m_sommet1(s1), m_sommet2(s2), m_marque(false)
+    : m_id(id), m_sommet1(s1), m_sommet2(s2), m_marque(false) /*,m_poidsCoords(sqrt(pow(s1->getCoord().getX()-s2->getCoord().getX(),2)+(pow(s1->getCoord().getY()-s2->getCoord().getY(),2))))*/
 {
 
 }

@@ -19,6 +19,7 @@ class Arete
         Sommet* getS1()const{return m_sommet1;};
         Sommet* getS2()const{return m_sommet2;};
         std::vector<double> getPoids()const{return m_poids;};
+        //double getPoidsCoords()const{return m_poidsCoords;};
         Sommet* getAutreSommet(Sommet* s){if (m_sommet1 != s) return m_sommet1; else return m_sommet2;};
         std::vector<Coord> getCoord() const;
 
@@ -33,6 +34,7 @@ class Arete
         Sommet* m_sommet1;
         Sommet* m_sommet2;
         std::vector<double> m_poids;
+        //double m_poidsCoords;
         bool m_marque;
 };
 

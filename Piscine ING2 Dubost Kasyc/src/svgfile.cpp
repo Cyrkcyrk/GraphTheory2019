@@ -83,7 +83,7 @@ void Svgfile::addCircle(double x, double y, double r, std::string colorFill, dou
             << attrib("cy", y)
             << attrib("r",  r)
             << attrib("fill", colorFill)
-            << attrib("opacity", opacity)
+            << attrib("opacity", 1)
             << "/>\n";
 }
 

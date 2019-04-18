@@ -298,7 +298,6 @@ void Graphe::pareto()
     std::cout << tableauDesPossibles[tableauDesPossibles.size()-1].second[0] << " ";
     std::cout << tableauDesPossibles[tableauDesPossibles.size()-1].second[1] << std::endl;
 
-
     double maxY = tableauDesPossibles[0].second[1];
     std::vector<int> xOptim;
     xOptim.push_back(tableauDesPossibles[0].second[0]);
@@ -333,11 +332,17 @@ void Graphe::pareto()
         }
     }
 
+    Svgfile SVGPareto("pareto_1.svg");
+    pareto.dessinerPareto(SVGPareto);
+
+    Graphe pareto2;
+
     int poids2 = 0;
-    std::cout << "Liste des poids A CORRIGER CAR PREND EN COMPTE LE POIDS[0]" <<std::endl;
     std::cout << std::endl;
+    std::vector<int> coords;
     for(auto p : tableauDesPossibles) // Pour chaque possibilite
     {
+        poids2 = 0;
         for(unsigned int i=0;i<m_aretes.size();i++) // Pour chaque sommet
         {
             if(p.first[i] == 1) // Ajoute ou non l'arete
@@ -350,12 +355,51 @@ void Graphe::pareto()
         {
             poids2 += this->algoDijkstra(s.second->getId());
         }
+       // poids2 /= m_sommets.size();
+
+        coords.push_back(poids2);
         std::cout << poids2 << "  ";
     }
+    /*
+    std::sort(coords.begin(), coords.end());
+    maxY = coords[0];
+    xOptim.clear();
+    xOptim.push_back(tableauDesPossibles[0].second[0]+tableauDesPossibles[0].second[1]);
+    pareto2.addSommet(0, tableauDesPossibles[0].second[0]+tableauDesPossibles[0].second[1],coords[0],true);
+    std::cout << xOptim[0];
+    for(unsigned int i=1;i<tableauDesPossibles.size()-1;i++)
+    {
+        if(coords[i]<maxY)
+        {
+            bool memeX = false;
+            for(auto x : xOptim)
+            {
+                if(x==tableauDesPossibles[i].second[0]+tableauDesPossibles[i].second[1])
+                {
+                    memeX = true;
+                }
+            }
+            if(!memeX)
+            {
+                xOptim.push_back(tableauDesPossibles[i].second[0]+tableauDesPossibles[i].second[1]);
+                maxY = coords[i];
+                pareto2.addSommet(i, tableauDesPossibles[i].second[0]+tableauDesPossibles[i].second[1],coords[i],true);
+            }
+            else
+            {
+                pareto2.addSommet(i, tableauDesPossibles[i].second[0]+tableauDesPossibles[i].second[1],coords[i]);
+            }
+        }
+        else
+        {
+            pareto2.addSommet(i, tableauDesPossibles[i].second[0]+tableauDesPossibles[i].second[1],coords[i]);
+        }
+    }
 
-    Svgfile SVGPareto;
-    pareto.dessinerPareto(SVGPareto);
 
+    Svgfile SVGPareto2("pareto_2.svg");;
+    pareto2.dessinerPareto(SVGPareto2);
+*/
     //delete(tableauDesPossibles);
 /*
     for (int i = 0; i< tableauDesPossibles.size(); i++)
@@ -420,7 +464,7 @@ void Graphe::addSommet(int id, double X, double Y, bool optimum)
 
 bool triAretesCroissantes(Arete* a1, Arete* a2)
 {
-    return a1->getPoids() > a2->getPoids();
+    return a1->getPoids()[1] > a2->getPoids()[1];
 }
 
 int Graphe::algoDijkstra(int depart)
@@ -465,18 +509,16 @@ int Graphe::algoDijkstra(int depart)
             decouverts.insert(myqueue.top());
         }
         myqueue.pop();
-        //std::cout <<s->getId()<< " : " ;
         for(auto voisin : s->getVoisins())
         {
             if (decouverts.find(voisin) == decouverts.end() && s->getArete(voisin)->isAjoute())
             {
                 myqueue.push(voisin);
-                //std::cout<<myqueue.top()->getId()<<" ";
-                if(dist.at(s)+s->getArete(voisin)->getPoids()[0]<dist.at(voisin))
+                if(dist.at(s)+s->getArete(voisin)->getPoids()[1]<dist.at(voisin))
                 {
-                    //std::cout << "Ajouter " << voisin->getId() << " depuis " << s->getId() << " coute "<<dist.at(s)+s->getArete(voisin)->getPoids()[0]<<std::endl;
-                    dist.at(voisin) = dist.at(s)+s->getArete(voisin)->getPoids()[0];
-                    voisin->setDistance(dist.at(s)+s->getArete(voisin)->getPoids()[0]);
+                  //  std::cout << "Ajouter " << voisin->getId() << " depuis " << s->getId() << " coute "<<dist.at(s)+s->getArete(voisin)->getPoids()[1]<<std::endl;
+                    dist.at(voisin) = dist.at(s)+s->getArete(voisin)->getPoids()[1];
+                    voisin->setDistance(dist.at(s)+s->getArete(voisin)->getPoids()[1]);
                 }
             }
 
