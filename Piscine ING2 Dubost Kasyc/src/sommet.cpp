@@ -80,14 +80,14 @@ std::unordered_set<const Sommet*> Sommet::rechercherCC(std::unordered_set<const 
     return cc;
 }
 
-std::pair<bool,std::vector<int>> Sommet::DFSM(unsigned int nbSommets)
+std::pair<bool,std::vector<int>*> Sommet::DFSM(unsigned int nbSommets)
 {
     std::unordered_set<Sommet*> decouverts;
     std::stack<Sommet*> pile;
 
-    std::vector<int> poidsChemin;
-    poidsChemin.push_back(0);
-    poidsChemin.push_back(0);
+    std::vector<int>* poidsChemin = new std::vector<int>;
+    poidsChemin->push_back(0);
+    poidsChemin->push_back(0);
 
     pile.push(this);
     Sommet* Ec;
@@ -99,8 +99,8 @@ std::pair<bool,std::vector<int>> Sommet::DFSM(unsigned int nbSommets)
         {
             if(Ec->getArete(s)!=NULL && Ec->getArete(s)->isAjoute() && decouverts.find(s) == decouverts.end())
             {
-                poidsChemin[0] += Ec->getArete(s)->getPoids()[0];
-                poidsChemin[1] += Ec->getArete(s)->getPoids()[1];
+                poidsChemin->at(0) += Ec->getArete(s)->getPoids()[0];
+                poidsChemin->at(1) += Ec->getArete(s)->getPoids()[1];
                 pile.push(s);
             }
         }

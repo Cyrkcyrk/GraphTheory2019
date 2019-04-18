@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "Graphe.h"
+#include "Possibilite.h"
 
 
 class maths
@@ -21,7 +22,7 @@ class maths
         static std::vector<std::vector<char>> compteurBinaire(int plusGrandNombre, unsigned int ordre, unsigned int taille);
         static std::vector<std::vector<char>> combinaisonsDe1(int ordre, int taille);
 
-        static std::vector<std::pair<std::vector<char>,std::vector<int>>> compteur_etat_possibles(int nb_sommet, int nb_arete, Graphe* g);
+        static std::vector<Possibilite*> compteur_etat_possibles(int nb_sommet, int nb_arete, Graphe* g);
         static std::vector<unsigned int> decalage(std::vector<unsigned int> position, int nbADecaler);
 
     protected:

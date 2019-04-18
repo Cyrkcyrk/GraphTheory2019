@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include "stdio.h"
+#include "Possibilite.h"
 #include "math.h"
 
 maths::maths()
@@ -129,15 +130,58 @@ std::vector<unsigned int> maths::decalage(std::vector<unsigned int> position, in
     }
 }
 
-std::vector<std::pair<std::vector<char>,std::vector<int>>> maths::compteur_etat_possibles(int nb_sommet, int nb_arete, Graphe* g)
+std::vector<Possibilite*> maths::compteur_etat_possibles(int nb_sommet, int nb_arete, Graphe* g)
 {
-    std::vector<std::pair<std::vector<char>,std::vector<int>>> retour;
+    std::vector<Possibilite*> retour;
+    //int chg = 0;
+   // std::string adresse = std::to_string(&retour);
     std::vector<unsigned int> position;
 
     //Creation du binaire de base
     for (int i=0; i<nb_sommet; i++)
     {
         position.push_back(nb_arete-1-i);
+    }
+
+    {
+        std::vector<char>* binaire = new std::vector<char>;
+        for (int j = 0; j< nb_arete; j++)
+        {
+            binaire->push_back(0);
+            g->getAretes()[j]->retirer();
+        }
+        for (unsigned int j=0; j< position.size(); j++)
+        {
+            binaire->at(position[j]) = 1;
+            g->getAretes()[position[j]]->ajouter();
+        }
+
+        std::pair<bool,std::vector<int>*> connexe = g->DFSM();
+        if(connexe.first)
+        {
+            if (retour.size() == 0)
+            {
+                retour.push_back(new Possibilite(binaire,connexe.second));
+            }
+            else
+            {
+                bool different = true;
+                for (int i=0 ; i<retour.size(); i++)
+                {
+                    if ((connexe.second->at(0) == retour[i]->getPoids()->at(0) && connexe.second->at(1) == retour[i]->getPoids()->at(1)) || connexe.second->at(0) < 0 || connexe.second->at(1) < 0)
+                    {
+                        different = false;
+                        i = retour.size();
+                    }
+                }
+                if(different)
+                {
+                    std::cout << "ON PUSHBACK 1: " << connexe.second->at(0) <<  "   -   2: " << connexe.second->at(1) << std::endl;
+                    retour.push_back(new Possibilite(binaire,connexe.second));
+                }
+
+            }
+        }
     }
 
     for(unsigned int i=1;; i++)
@@ -153,29 +197,31 @@ std::vector<std::pair<std::vector<char>,std::vector<int>>> maths::compteur_etat_
 
 
         /// Creation du binaire
-        std::vector<char> binaire;
+        std::vector<char>* binaire = new std::vector<char>;
         for (int j = 0; j< nb_arete; j++)
         {
-            binaire.push_back(0);
+            binaire->push_back(0);
             g->getAretes()[j]->retirer();
         }
         for (unsigned int j=0; j< position.size(); j++)
         {
-            binaire[position[j]] = 1;
+            binaire->at(position[j]) = 1;
             g->getAretes()[position[j]]->ajouter();
         }
 
-        std::pair<bool,std::vector<int>> connexe = g->DFSM();
+        std::pair<bool,std::vector<int>*> connexe = g->DFSM();
 
         if(connexe.first)
         {
-            retour.push_back(std::make_pair(binaire,connexe.second));
+            retour.push_back(new Possibilite(binaire,connexe.second));
+            /*if((std::string)&retour !=adresse)
+            {
+                chg++;
+                adresse = std::to_string(&retour);
+            }*/
         }
     }
-    for(unsigned int i=0;i<retour.size();i++)
-    {
-        if(retour[i].second[0] < 0)retour.erase(retour.begin()+i);
-    }
+   // std::cout <<"Changements d'adresses : " << chg;
     /*
     for (int i =0; i < maths::nCr(nb_sommet, nb_arete); i++)
     {

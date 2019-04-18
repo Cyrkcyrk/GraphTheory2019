@@ -266,18 +266,32 @@ int Graphe::rechercher_afficherToutesCC()
     return i;
 }
 
-bool sortCritere(std::pair<std::vector<char>,std::vector<int>>& a, std::pair<std::vector<char>,std::vector<int>>& b)
+bool sortCritere(Possibilite* a, Possibilite* b)
 {
-    if (a.second[0] < b.second[0])
+    if (a->getPoids()->at(0) < b->getPoids()->at(0))
     {
         return true;
     }
-    else if(a.second[0] == b.second[0])
+    else if(a->getPoids()->at(0) == b->getPoids()->at(0))
     {
-        return a.second[1] < b.second[1];
+        return a->getPoids()->at(1) < b->getPoids()->at(1);
     }
     else return false;
 }
+
+bool sortCritere2(Possibilite* a, Possibilite* b)
+{
+    if (a->getPoidsDij() < b->getPoidsDij())
+    {
+        return true;
+    }
+    else if(a->getPoidsDij() == b->getPoidsDij())
+    {
+        return a->getPoids()->at(0) < b->getPoids()->at(0);
+    }
+    else return false;
+}
+
 
 void Graphe::pareto()
 {
@@ -285,8 +299,7 @@ void Graphe::pareto()
 
     std:: cout << "Sommet : " << m_sommets.size() << " - Arrete : " << m_aretes.size() << std::endl;
 
-
-    std::vector<std::pair<std::vector<char>,std::vector<int>>> tableauDesPossibles = maths::compteur_etat_possibles(m_sommets.size()-1,m_aretes.size(),this); // Tableau des possibles
+    std::vector<Possibilite*> tableauDesPossibles = maths::compteur_etat_possibles(m_sommets.size()-1,m_aretes.size(),this);
 
     std::cout <<"Nbr possibilites : "<< tableauDesPossibles.size() << std::endl;
 
@@ -295,40 +308,37 @@ void Graphe::pareto()
     std::cout<<"Sorting..."<<std::endl;
     std::sort(tableauDesPossibles.begin(), tableauDesPossibles.end(),sortCritere);
     std::cout<<"Fin du tri"<<std::endl;
-    std::cout << tableauDesPossibles[tableauDesPossibles.size()-1].second[0] << " ";
-    std::cout << tableauDesPossibles[tableauDesPossibles.size()-1].second[1] << std::endl;
 
-    double maxY = tableauDesPossibles[0].second[1];
+    double maxY = tableauDesPossibles[0]->getPoids()->at(1);
     std::vector<int> xOptim;
-    xOptim.push_back(tableauDesPossibles[0].second[0]);
-    pareto.addSommet(0, tableauDesPossibles[0].second[0], tableauDesPossibles[0].second[1],true);
-    std::cout << xOptim[0];
-    for(unsigned int i=1;i<tableauDesPossibles.size()-1;i++)
+    xOptim.push_back(tableauDesPossibles[0]->getPoids()->at(0));
+    pareto.addSommet(0, tableauDesPossibles[0]->getPoids()->at(0), tableauDesPossibles[0]->getPoids()->at(1),true);
+    for(unsigned int i=1;i<tableauDesPossibles.size();i++)
     {
-        if(tableauDesPossibles[i].second[1]<maxY)
+        if(tableauDesPossibles[i]->getPoids()->at(1)<maxY)
         {
             bool memeX = false;
             for(auto x : xOptim)
             {
-                if(x==tableauDesPossibles[i].second[0])
+                if(x==tableauDesPossibles[i]->getPoids()->at(0))
                 {
                     memeX = true;
                 }
             }
             if(!memeX)
             {
-                xOptim.push_back(tableauDesPossibles[i].second[0]);
-                maxY = tableauDesPossibles[i].second[1];
-                pareto.addSommet(i, tableauDesPossibles[i].second[0], tableauDesPossibles[i].second[1],true);
+                xOptim.push_back(tableauDesPossibles[i]->getPoids()->at(0));
+                maxY = tableauDesPossibles[i]->getPoids()->at(1);
+                pareto.addSommet(i, tableauDesPossibles[i]->getPoids()->at(0), tableauDesPossibles[i]->getPoids()->at(1),true);
             }
             else
             {
-                pareto.addSommet(i, tableauDesPossibles[i].second[0], tableauDesPossibles[i].second[1]);
+                pareto.addSommet(i, tableauDesPossibles[i]->getPoids()->at(0), tableauDesPossibles[i]->getPoids()->at(1));
             }
         }
         else
         {
-            pareto.addSommet(i, tableauDesPossibles[i].second[0], tableauDesPossibles[i].second[1]);
+            pareto.addSommet(i, tableauDesPossibles[i]->getPoids()->at(0), tableauDesPossibles[i]->getPoids()->at(1));
         }
     }
 
@@ -336,16 +346,25 @@ void Graphe::pareto()
     pareto.dessinerPareto(SVGPareto);
 
     Graphe pareto2;
+    for(unsigned int i = m_sommets.size(); i <= m_aretes.size();i++)
+    {
+        std::vector<Possibilite*> newSols = maths::compteur_etat_possibles(i,m_aretes.size(),this);
+        for(auto sol : newSols)
+        {
+            tableauDesPossibles.push_back(sol);
+        }
+    }
+    std::cout << tableauDesPossibles.size();
 
-    int poids2 = 0;
     std::cout << std::endl;
     std::vector<int> coords;
+    std::vector<int> coordsReelOrdre;
+    int nbDij = 0;
     for(auto p : tableauDesPossibles) // Pour chaque possibilite
     {
-        poids2 = 0;
-        for(unsigned int i=0;i<m_aretes.size();i++) // Pour chaque sommet
+        for(unsigned int i=0;i<m_aretes.size();i++) // Pour chaque arete
         {
-            if(p.first[i] == 1) // Ajoute ou non l'arete
+            if(p->getBinaire()->at(i) == 1) // Ajoute ou non l'arete
             {
                 m_aretes[i]->ajouter();
             }
@@ -353,94 +372,52 @@ void Graphe::pareto()
         }
         for(auto s : m_sommets)
         {
-            poids2 += this->algoDijkstra(s.second->getId());
+            if(nbDij%10000 == 0) std::cout<< nbDij << " dijkstra effectues"<<std::endl;
+            p->setPoidsDij(p->getPoidsDij()+this->algoDijkstra(s.second->getId()));
+            nbDij++;
         }
-       // poids2 /= m_sommets.size();
-
-        coords.push_back(poids2);
-        std::cout << poids2 << "  ";
     }
-    /*
-    std::sort(coords.begin(), coords.end());
-    maxY = coords[0];
+
+    std::sort(tableauDesPossibles.begin(), tableauDesPossibles.end(),sortCritere2);
+
+    maxY = tableauDesPossibles[0]->getPoids()->at(0);
     xOptim.clear();
-    xOptim.push_back(tableauDesPossibles[0].second[0]+tableauDesPossibles[0].second[1]);
-    pareto2.addSommet(0, tableauDesPossibles[0].second[0]+tableauDesPossibles[0].second[1],coords[0],true);
-    std::cout << xOptim[0];
-    for(unsigned int i=1;i<tableauDesPossibles.size()-1;i++)
+    xOptim.push_back(tableauDesPossibles[0]->getPoidsDij());
+    pareto2.addSommet(0, tableauDesPossibles[0]->getPoids()->at(0), tableauDesPossibles[0]->getPoidsDij(),true);
+    for(unsigned int i=1;i<tableauDesPossibles.size();i++)
     {
-        if(coords[i]<maxY)
+        if(tableauDesPossibles[i]->getPoids()->at(0)<maxY)
         {
             bool memeX = false;
             for(auto x : xOptim)
             {
-                if(x==tableauDesPossibles[i].second[0]+tableauDesPossibles[i].second[1])
+                if(x==tableauDesPossibles[i]->getPoidsDij())
                 {
                     memeX = true;
                 }
             }
             if(!memeX)
             {
-                xOptim.push_back(tableauDesPossibles[i].second[0]+tableauDesPossibles[i].second[1]);
-                maxY = coords[i];
-                pareto2.addSommet(i, tableauDesPossibles[i].second[0]+tableauDesPossibles[i].second[1],coords[i],true);
+                xOptim.push_back(tableauDesPossibles[i]->getPoidsDij());
+                maxY = tableauDesPossibles[i]->getPoids()->at(0);
+                pareto2.addSommet(i, tableauDesPossibles[i]->getPoids()->at(0), tableauDesPossibles[i]->getPoidsDij(),true);
             }
             else
             {
-                pareto2.addSommet(i, tableauDesPossibles[i].second[0]+tableauDesPossibles[i].second[1],coords[i]);
+                pareto2.addSommet(i, tableauDesPossibles[i]->getPoids()->at(0), tableauDesPossibles[i]->getPoidsDij());
             }
         }
         else
         {
-            pareto2.addSommet(i, tableauDesPossibles[i].second[0]+tableauDesPossibles[i].second[1],coords[i]);
+            pareto2.addSommet(i, tableauDesPossibles[i]->getPoids()->at(0), tableauDesPossibles[i]->getPoidsDij());
         }
     }
-
 
     Svgfile SVGPareto2("pareto_2.svg");;
     pareto2.dessinerPareto(SVGPareto2);
-*/
-    //delete(tableauDesPossibles);
-/*
-    for (int i = 0; i< tableauDesPossibles.size(); i++)
-    {
-        std::cout << std::endl << i << " : ";
-        for (int j=0; j< tableauDesPossibles[i].size(); j++)
-        {
-            std::cout << int(tableauDesPossibles[i][j]);
-        }
-    }
-    std::cout<<"Recherche des connexes" <<std::endl;
-    std::unordered_set<Sommet*> sommetAjoute;
-
-    for(unsigned int i=0;i<tableauDesPossibles.size();i++) // Pour chaque possibilite
-    {
-        for(unsigned int j=0;j<tableauDesPossibles[i].size();j++) // Pour chaque arete
-        {
-            if((int)tableauDesPossibles[i][j] == 1) // Si l'arete est selectionnee
-            {
-                m_aretes[j]->ajouter();
-            }
-        }
-
-        if(sommetAjoute.size() != m_sommets.size())
-        {
-            tableauDesPossibles.erase(tableauDesPossibles.begin()+i);
-        }
-    }
-    for (int i = 0; i< tableauDesPossibles.size(); i++)
-    {
-        std::cout << std::endl << i << " : ";
-        for (int j=0; j< tableauDesPossibles[i].size(); j++)
-        {
-            std::cout << int(tableauDesPossibles[i][j]);
-        }
-    }
-*/
-
 }
 
-std::pair<bool,std::vector<int>> Graphe::DFSM() //DFS Marque
+std::pair<bool,std::vector<int>*> Graphe::DFSM() //DFS Marque
 {
     Sommet*s0 = m_sommets[0];
     int nbSommetM = 0;
@@ -460,8 +437,6 @@ void Graphe::addSommet(int id, double X, double Y, bool optimum)
     m_sommets.insert({id, new Sommet(id, X, Y, optimum)});
 }
 
-
-
 bool triAretesCroissantes(Arete* a1, Arete* a2)
 {
     return a1->getPoids()[1] > a2->getPoids()[1];
@@ -476,7 +451,12 @@ int Graphe::algoDijkstra(int depart)
 
     auto cmp = [](Sommet* s1, Sommet* s2)
     {
-        return s1->getD()+s1->getDistancePlusProcheVoisin() > s2->getD()+s2->getDistancePlusProcheVoisin();
+        /*if(s1->getD()+s1->getDistancePlusProcheVoisin() > s2->getD()+s2->getDistancePlusProcheVoisin())
+        {
+              std::cout << s1->getD()+s1->getDistancePlusProcheVoisin() << " gagne contre " << s2->getD()+s2->getDistancePlusProcheVoisin() <<std::endl;
+        }
+        else std::cout << s2->getD()+s2->getDistancePlusProcheVoisin() << " perd contre " << s1->getD()+s1->getDistancePlusProcheVoisin()<<std::endl;
+        */return s1->getD()+s1->getDistancePlusProcheVoisin() > s2->getD()+s2->getDistancePlusProcheVoisin();
     };
     std::priority_queue<Sommet*, std::vector<Sommet*>, decltype(cmp)> myqueue(cmp);
 
@@ -516,12 +496,11 @@ int Graphe::algoDijkstra(int depart)
                 myqueue.push(voisin);
                 if(dist.at(s)+s->getArete(voisin)->getPoids()[1]<dist.at(voisin))
                 {
-                  //  std::cout << "Ajouter " << voisin->getId() << " depuis " << s->getId() << " coute "<<dist.at(s)+s->getArete(voisin)->getPoids()[1]<<std::endl;
+                    //std::cout << "Ajouter " << voisin->getId() << " depuis " << s->getId() << " coute "<<dist.at(s)+s->getArete(voisin)->getPoids()[1]<<std::endl;
                     dist.at(voisin) = dist.at(s)+s->getArete(voisin)->getPoids()[1];
                     voisin->setDistance(dist.at(s)+s->getArete(voisin)->getPoids()[1]);
                 }
             }
-
         }
     }
     int somme = 0;
@@ -530,5 +509,6 @@ int Graphe::algoDijkstra(int depart)
         somme+=a.second;
     }
     return somme;
+
 }
 
