@@ -213,15 +213,35 @@ std::vector<Possibilite*> maths::compteur_etat_possibles(int nb_sommet, int nb_a
 
         if(connexe.first)
         {
-            retour.push_back(new Possibilite(binaire,connexe.second));
-            /*if((std::string)&retour !=adresse)
+            if (retour.size() == 0)
             {
-                chg++;
-                adresse = std::to_string(&retour);
-            }*/
+                retour.push_back(new Possibilite(binaire,connexe.second));
+            }
+            else
+            {
+                bool different = true;
+                for (int i=0 ; i<retour.size(); i++)
+                {
+                    if ((connexe.second->at(0) == retour[i]->getPoids()->at(0) && connexe.second->at(1) == retour[i]->getPoids()->at(1)) || connexe.second->at(0) < 0 || connexe.second->at(1) < 0)
+                    {
+                        different = false;
+                        i = retour.size();
+                    }
+                }
+                if(different)
+                {
+                    retour.push_back(new Possibilite(binaire,connexe.second));
+                }
+
+            }
         }
     }
-   // std::cout <<"Changements d'adresses : " << chg;
+    /***$
+    for(unsigned int i=0;i<retour.size();i++)
+    {
+        if(retour[i].second[0] < 0)retour.erase(retour.begin()+i);
+    }
+    **/
     /*
     for (int i =0; i < maths::nCr(nb_sommet, nb_arete); i++)
     {
