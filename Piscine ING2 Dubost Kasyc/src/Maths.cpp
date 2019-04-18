@@ -169,13 +169,37 @@ std::vector<std::pair<std::vector<char>,std::vector<int>>> maths::compteur_etat_
 
         if(connexe.first)
         {
-            retour.push_back(std::make_pair(binaire,connexe.second));
+
+            if (retour.size() == 0)
+            {
+                retour.push_back(std::make_pair(binaire,connexe.second));
+            }
+            else
+            {
+                bool different = true;
+                for (int i=0 ; i<retour.size(); i++)
+                {
+                    if ((connexe.second[0] == retour[i].second[0] && connexe.second[1] == retour[i].second[1]) || connexe.second[0] < 0 || connexe.second[1] < 0)
+                    {
+                        different = false;
+                        i = retour.size();
+                    }
+                }
+                if(different)
+                {
+                    std::cout << "ON PUSHBACK 1: " << connexe.second[0] <<  "   -   2: " << connexe.second[1] << std::endl;
+                    retour.push_back(std::make_pair(binaire,connexe.second));
+                }
+
+            }
         }
     }
+    /***$
     for(unsigned int i=0;i<retour.size();i++)
     {
         if(retour[i].second[0] < 0)retour.erase(retour.begin()+i);
     }
+    **/
     /*
     for (int i =0; i < maths::nCr(nb_sommet, nb_arete); i++)
     {
