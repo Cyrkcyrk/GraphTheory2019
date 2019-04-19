@@ -35,10 +35,10 @@ std::vector<Coord> Arete::getCoord() const
 
 //svgout.addLine(tmp[0].getX(), tmp[0].getY(), tmp[1].getX(), tmp[1].getY(), TRAIT_EPAISSEUR, TRAIT_COULEUR);
 
-void Arete::dessiner(Svgfile& svgout,  bool afficher_poids)
+void Arete::dessiner(Svgfile& svgout,  bool afficher_poids, double coefX, double coefY)
 {
-    svgout.addLine(this->m_sommet1->getCoord().getX(), this->m_sommet1->getCoord().getY(),
-                   this->m_sommet2->getCoord().getX(), this->m_sommet2->getCoord().getY(),
+    svgout.addLine(this->m_sommet1->getCoord().getX()*coefX, this->m_sommet1->getCoord().getY()*coefY,
+                   this->m_sommet2->getCoord().getX()*coefX, this->m_sommet2->getCoord().getY()*coefY,
                    TRAIT_EPAISSEUR, TRAIT_COULEUR);
 
     if (afficher_poids)
@@ -55,7 +55,8 @@ void Arete::dessiner(Svgfile& svgout,  bool afficher_poids)
             }
         }
 
-        Coord milieu = Coord((this->m_sommet1->getCoord().getX() + this->m_sommet2->getCoord().getX())/2, (this->m_sommet1->getCoord().getY() + this->m_sommet2->getCoord().getY())/2);
+        Coord milieu = Coord((this->m_sommet1->getCoord().getX()*coefX + this->m_sommet2->getCoord().getX()*coefX)/2,
+                             (this->m_sommet1->getCoord().getY()*coefY + this->m_sommet2->getCoord().getY()*coefY)/2);
         svgout.addText(milieu.getX(), milieu.getY(), stream.str(), "rgb(50, 50, 50)", 11, true);
     }
 }

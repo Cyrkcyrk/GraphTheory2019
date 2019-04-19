@@ -254,8 +254,6 @@ std::vector<Possibilite*> maths::compteur_etat_possibles(int nb_sommet, int nb_a
     return retour;
 }
 
-
-
 std::vector<std::vector<char>>* maths::decalageAToB(std::vector<char>& petitBinaire,std::vector<char>& binaire)
 {
     std::vector<std::vector<char>>* solutions = new std::vector<std::vector<char>>;

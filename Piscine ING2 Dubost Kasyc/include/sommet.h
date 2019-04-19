@@ -37,7 +37,7 @@ class Sommet
         std::unordered_set<const Sommet*> rechercherCC(std::unordered_set<const Sommet*> cc) const;
         std::pair<bool,std::vector<int>*>* DFSM(unsigned int nbSommets);
 
-        void dessiner(Svgfile& svgout, double coef = 1.0, bool afficher_texte = false, double rayon = POINT_RAYON, std::string couleur = POINT_COULEUR, double opacity = 1.0);
+        void dessiner(Svgfile& svgout, double coefX = 1.0, double coefY = 1.0, bool afficher_texte = false, double rayon = POINT_RAYON, std::string couleur = POINT_COULEUR, double opacity = 1.0);
 
     private:
         int m_id;

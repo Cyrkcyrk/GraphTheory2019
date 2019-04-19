@@ -27,7 +27,7 @@ class Arete
         void ajouter(){m_marque = true;};
         void retirer(){m_marque = false;};
 
-        void dessiner(Svgfile& svgout, bool afficher_poids = false);
+        void dessiner(Svgfile& svgout, bool afficher_poids = false, double coefX = 1.0, double coefY = 1.0);
 
     private:
         int m_id;

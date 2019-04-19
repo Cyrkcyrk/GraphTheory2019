@@ -13,12 +13,28 @@
 
 Graphe::Graphe()
 {
+    m_poidsMax.push_back(0);
+    m_poidsMax.push_back(0);
 }
 
 Graphe::Graphe(std::string nomFichierSommet, std::string nomFichierArete)
 {
     lireSommet(nomFichierSommet);
     lireArete(nomFichierArete);
+
+    m_poidsMax.push_back(0);
+    m_poidsMax.push_back(0);
+
+    for (auto s : m_sommets)
+    {
+        if (s.second->getCoord().getX() > m_poidsMax[0])
+            m_poidsMax[0] = s.second->getCoord().getX();
+
+        if (s.second->getCoord().getY() > m_poidsMax[1])
+            m_poidsMax[1] = s.second->getCoord().getY();
+    }
+
+
 }
 
 Graphe::Graphe(std::vector<Sommet*> sommets, std::vector<Arete*> aretes)
@@ -47,13 +63,22 @@ void Graphe::dessinerGraphe(Svgfile& svgout)
 
     for(auto s : m_sommets)
     {
-        s.second->dessiner(svgout, 1, true);
+        s.second->dessiner(svgout, 1, 1, true);
     }
 }
 
-void Graphe::dessinerPareto(Svgfile& svgout)
+void Graphe::dessinerPareto(std::string name)
 {
+    std::cout << "X: " << m_poidsMax[0] << "Y: "<< m_poidsMax[1] << std::endl;
+    double coefX=100.0/m_poidsMax[0], coefY=100.0/m_poidsMax[1];
+
+    std::cout << "X: " << coefX << "Y: "<< coefY << std::endl;
+
+
+    //double coefX=1.0, coefY=1.0;
     std::vector<Sommet*> frontiere;
+
+    Svgfile svgout(name, m_poidsMax[0]+100, m_poidsMax[1]+100);
 
     for(auto s : m_sommets)
     {
@@ -63,13 +88,13 @@ void Graphe::dessinerPareto(Svgfile& svgout)
         }
         else
         {
-            s.second->dessiner(svgout, 1, false, POINT_PARETO_RAYON, POINT_COULEUR, 0.1);
+            s.second->dessiner(svgout, coefX, coefY, false, POINT_PARETO_RAYON, POINT_COULEUR, 0.5);
         }
     }
 
     for(auto s : frontiere)
     {
-        svgout.addCircle(s->getCoord().getX()*5, s->getCoord().getY(), POINT_PARETO_RAYON, POINT_PARETO_COULEUR_OPTIMUM, PARETO_FONT_SIZE);
+        svgout.addCircle(s->getCoord().getX()*coefX, s->getCoord().getY()*coefY, POINT_PARETO_RAYON, POINT_PARETO_COULEUR_OPTIMUM, PARETO_FONT_SIZE);
 
         std::stringstream stream;
         stream << std::fixed << std::setprecision(1)
@@ -77,7 +102,7 @@ void Graphe::dessinerPareto(Svgfile& svgout)
                << " / "
                << s->getCoord().getY();
 
-        svgout.addText(s->getCoord().getX()*5, s->getCoord().getY(), stream.str(), "rgb(50, 50, 50)", PARETO_FONT_SIZE);
+        svgout.addText(s->getCoord().getX()*coefX, s->getCoord().getY()*coefY, stream.str(), "rgb(50, 50, 50)", PARETO_FONT_SIZE);
     }
 }
 
@@ -282,8 +307,18 @@ void Graphe::pareto(std::vector<Possibilite*>& tableauDesPossibles, bool paretoP
     std::vector<int> xOptim;
     xOptim.push_back(tableauDesPossibles[0]->getPoids()->at(0));
     pareto.addSommet(0, tableauDesPossibles[0]->getPoids()->at(0), tableauDesPossibles[0]->getPoids()->at(1),true);
+
     for(unsigned int i=1;i<tableauDesPossibles.size();i++)
     {
+        if (pareto.getPoidsMax(1) < tableauDesPossibles[i]->getPoids()->at(0))
+        {
+            pareto.setPoidsMax(0, tableauDesPossibles[i]->getPoids()->at(0));
+        }
+        if (pareto.getPoidsMax(1) < tableauDesPossibles[i]->getPoids()->at(1))
+        {
+            pareto.setPoidsMax(1, tableauDesPossibles[i]->getPoids()->at(1));
+        }
+
         if(tableauDesPossibles[i]->getPoids()->at(1)<maxY)
         {
             bool memeX = false;
@@ -311,8 +346,8 @@ void Graphe::pareto(std::vector<Possibilite*>& tableauDesPossibles, bool paretoP
         }
     }
 
-    Svgfile SVGPareto("pareto_1.svg");
-    pareto.dessinerPareto(SVGPareto);
+
+    pareto.dessinerPareto("pareto_1.svg");
 
     if (paretoPrim)
     {
@@ -406,9 +441,9 @@ void Graphe::pareto(std::vector<Possibilite*>& tableauDesPossibles, bool paretoP
         }
     }
 
-    Svgfile SVGPareto2("pareto_2.svg", 500, 11000);
-    pareto2.dessinerPareto(SVGPareto2);
+    pareto2.dessinerPareto("pareto_2.svg");
 }
+
 
 std::pair<bool,std::vector<int>*>* Graphe::DFSM() //DFS Marque
 {

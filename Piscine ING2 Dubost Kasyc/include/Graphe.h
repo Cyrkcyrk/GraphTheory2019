@@ -19,7 +19,7 @@ class Graphe
         void lireSommet(std::string nomFichierSommet);
         void lireArete(std::string nomFichierArete);
         void dessinerGraphe(Svgfile& svgout);
-        void dessinerPareto(Svgfile& svgout);
+        void dessinerPareto(std::string name = "pareto.svg");
 
         void compteurBinaire();
 
@@ -28,6 +28,9 @@ class Graphe
         int getNbrCritere() const {return m_NbrCritere;};
         unsigned int getTaille() const {return m_aretes.size();};
         unsigned int getOrdre() const {return m_sommets.size();};
+
+        void setPoidsMax(int nb, double poids) {this->m_poidsMax[nb] = poids;};
+        double getPoidsMax(int nb) {return m_poidsMax[nb];};
 
         void addSommet(int id, double X, double Y, bool optimum = false);
 
@@ -48,6 +51,7 @@ class Graphe
         std::unordered_map<int,Sommet*> m_sommets;
         std::unordered_map<int,Arete*> m_aretes;
         std::vector<std::vector<std::string>> m_tabDesPossibles;
+        std::vector<double> m_poidsMax;
 };
 
 #endif // GRAPHE_H
