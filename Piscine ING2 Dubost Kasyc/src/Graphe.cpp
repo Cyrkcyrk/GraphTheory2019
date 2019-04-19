@@ -207,7 +207,6 @@ Graphe Graphe::algoPrim(int depart, int critere) const
                 }
                 if(potAretePoidsMin->getPoids()[critere] < aretePoidsMin->getPoids()[critere])
                 {
-
                     sommetPoidsMin = potSommetPoidsMin;
                     aretePoidsMin = potAretePoidsMin;
                     trouve = true;
@@ -238,34 +237,6 @@ Graphe Graphe::algoPrim(int depart, int critere) const
 }
 
 
-int Graphe::rechercher_afficherToutesCC()
-{
-    int i=0;
-    std::unordered_set<const Sommet*> newConnex;
-    std::unordered_set<const Sommet*> decouverts;
-    std::vector<std::unordered_set<const Sommet*>> composConnex;
-    for(auto s : m_sommets) // Pour chaque sommet du graphe
-    {
-        if (decouverts.find(s.second) == decouverts.end()) // Non decouvert
-        {
-            newConnex = s.second->rechercherCC(newConnex); // Recherhe tous sommets composante connexe
-            for(auto newS : newConnex)
-            {
-                if(decouverts.find(newS) == decouverts.end())
-                {
-                    decouverts.insert(newS);
-                }
-            }
-            composConnex.push_back(s.second->rechercherCC(newConnex)); // Ajoute la compo au tab de compo
-            newConnex.erase(newConnex.begin(),newConnex.end());
-            i++;
-        }
-    }
-    composConnex.push_back(newConnex);
-    std::cout << "nombre cc :" << i << std::endl;
-    return i;
-}
-
 bool sortCritere(Possibilite* a, Possibilite* b)
 {
     if (a->getPoids()->at(0) < b->getPoids()->at(0))
@@ -293,13 +264,11 @@ bool sortCritere2(Possibilite* a, Possibilite* b)
 }
 
 
-void Graphe::pareto()
+void Graphe::pareto(std::vector<Possibilite*>& tableauDesPossibles, bool paretoPrim)
 {
     //maths::compteur_etat_possibles(m_sommets.size()-1,m_aretes.size(),this); // Tableau des possibles
 
     std:: cout << "Sommet : " << m_sommets.size() << " - Arrete : " << m_aretes.size() << std::endl;
-
-    std::vector<Possibilite*> tableauDesPossibles = maths::compteur_etat_possibles(m_sommets.size()-1,m_aretes.size(),this);
 
     std::cout <<"Nbr possibilites : "<< tableauDesPossibles.size() << std::endl;
 
@@ -345,23 +314,30 @@ void Graphe::pareto()
     Svgfile SVGPareto("pareto_1.svg");
     pareto.dessinerPareto(SVGPareto);
 
+    if (paretoPrim)
+    {
+        return;
+    }
+
     Graphe pareto2;
     std::vector<Possibilite*> newSols;
-    for(unsigned int i = m_sommets.size(); i <= m_aretes.size();i++)
+    if(!paretoPrim)
     {
-        newSols.clear();
-        newSols = maths::compteur_etat_possibles(i,m_aretes.size(),this);
-        for(auto sol : newSols)
+        for(unsigned int i = m_sommets.size(); i <= m_aretes.size();i++)
         {
-            if(sol->getPoids()->at(0)>=0)
+            newSols.clear();
+            newSols = maths::compteur_etat_possibles(i,m_aretes.size(),this);
+            for(auto sol : newSols)
             {
-                tableauDesPossibles.push_back(sol);
+                if(sol->getPoids()->at(0)>=0)
+                {
+                    tableauDesPossibles.push_back(sol);
+                }
             }
         }
     }
 
     std::cout << tableauDesPossibles.size();
-
 
     std::cout << std::endl;
     int nbDij = 0;
@@ -378,17 +354,19 @@ void Graphe::pareto()
         }
         for(auto s : m_sommets)
         {
-
-            if(nbDij%10000 == 0) std::cout<< nbDij << " dijkstra effectues"<<std::endl;
+            if(nbDij%10000 == 0) std::cout<< nbDij << " Dijkstra effectues"<<std::endl;
             tableauDesPossibles[a]->setPoidsDij(tableauDesPossibles[a]->getPoidsDij()+this->algoDijkstra(s.second->getId()));
             nbDij++;
         }
     }
 
+    std::cout<<"Sorting..."<<std::endl;
     std::sort(tableauDesPossibles.begin(), tableauDesPossibles.end(),sortCritere2);
+    std::cout<<"Fin du tri"<<std::endl;
+
     for(unsigned int a=1;a<tableauDesPossibles.size()-1;a++)
     {
-        if(tableauDesPossibles[a]->getPoids()->at(0) == tableauDesPossibles[a-1]->getPoids()->at(0) && tableauDesPossibles[a]->getPoidsDij() == tableauDesPossibles[a-1]->getPoidsDij() || tableauDesPossibles[a]->getPoids()->at(0) < 0)
+        if((tableauDesPossibles[a]->getPoids()->at(0) == tableauDesPossibles[a-1]->getPoids()->at(0) && tableauDesPossibles[a]->getPoidsDij() == tableauDesPossibles[a-1]->getPoidsDij()) || tableauDesPossibles[a]->getPoids()->at(0) < 0)
         {
             tableauDesPossibles.erase(tableauDesPossibles.begin()+a);
             a--;

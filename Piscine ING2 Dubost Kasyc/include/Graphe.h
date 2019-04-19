@@ -6,6 +6,7 @@
 #include "sommet.h"
 #include "arete.h"
 #include "svgfile.h"
+#include "Possibilite.h"
 
 class Graphe
 {
@@ -31,7 +32,7 @@ class Graphe
         void addSommet(int id, double X, double Y, bool optimum = false);
 
         int rechercher_afficherToutesCC();
-        void pareto();
+        void pareto(std::vector<Possibilite*>& tableauDesPossibles, bool paleroPrim = false);
         void parcoursDFS(int id) const;
 
         std::unordered_map<int,Arete*> getAretes(){return m_aretes;};

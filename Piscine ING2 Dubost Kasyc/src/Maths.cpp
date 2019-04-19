@@ -50,7 +50,7 @@ int maths::binToInt(std::vector<char>& bin)
 
     for(unsigned int i = 0;i<bin.size()-1;i++)
     {
-        rep += (bin[i]-'0')*pow(2,(bin.size()-1-i));
+        rep += ((int)bin[i])*pow(2,(bin.size()-1-i));
     }
     return rep;
 }
@@ -251,5 +251,150 @@ std::vector<Possibilite*> maths::compteur_etat_possibles(int nb_sommet, int nb_a
             retour.erase(retour.begin()+i);
         }
     }
+    return retour;
+}
+
+
+
+std::vector<std::vector<char>>* maths::decalageAToB(std::vector<char>& petitBinaire,std::vector<char>& binaire)
+{
+    std::vector<std::vector<char>>* solutions = new std::vector<std::vector<char>>;
+    std::vector<std::vector<char>>* solutionsTot = new std::vector<std::vector<char>>;
+    std::vector<char> solution;
+    int nbXMax = 0;
+    for(unsigned int i = 0;i<binaire.size();i++)
+    {
+        if(binaire[i] == 'x') // Si x
+        {
+            nbXMax++;
+        }
+    }
+
+    /*for(unsigned int i = 0;i<binaire.size();i++)
+    {
+        if(binaire[i] == 'x') // Si x
+        {
+            solution.push_back(0);
+        }
+        else solution.push_back(binaire[i]);
+    }
+
+    for(unsigned int i = 0;i<binaire.size();i++)
+    {
+        if(binaire[i] == 'x') // Si x
+        {
+            solution.push_back(1);
+        }
+        else solstd::vector<char> solution;ution.push_back(binaire[i]); // C'est le nombre deja mis dans binaire
+    }
+
+    solution.clear();
+        mini++;
+        if(mini%10000 == 0) std::cout<< mini<<std::endl;
+        std::vector<char> bin = intToBin(mini);
+        for(unsigned int i = 0;i<binaire.size();i++)
+        {
+            if(intToBin(mini)[i] == binaire[i] && binaire[i] == 'x')
+            {
+                solution.push_back(bin[i]);
+            }
+            else if (intToBin(mini)[i] == binaire[i]) solution.push_back(binaire[i]); // C'est le nombre deja mis dans binaire
+        }
+        if(bin.size()==binaire.size())solutions->push_back(solution);
+    */
+
+
+    int mini = 0;
+
+    std::vector<char> grandBinaire;
+    for(int i = 0 ;i<petitBinaire.size();i++)
+    {
+        grandBinaire.push_back(1);
+    }
+    int maxi = binToInt(grandBinaire);
+
+    while(mini < maxi)
+    {
+        mini++;
+
+            std::vector<char> sol = intToBin(mini);
+            while(sol.size()<nbXMax)sol.push_back(0);
+            solutions->push_back(sol);
+    }
+
+    for(auto solution: *solutions)
+    {
+        std::vector<char> solutionV;
+        int j=0;
+        for(unsigned int i=0;i<binaire.size();i++)
+        {
+            if(binaire[i] == 'x')
+            {
+                solutionV.push_back(solution[j]);
+                j++;
+            }else solutionV.push_back(binaire[i]);
+        }
+        solutionsTot->push_back(solutionV);
+    }
+
+    return solutionsTot;
+}
+
+std::vector<Possibilite*> maths::compteur_etat_possiblesPrim(std::vector<char> binaireA,std::vector<char> binaireB, Graphe* g)
+{
+    std::vector<Possibilite*> retour;
+    //int chg = 0;
+   // std::string adresse = std::to_string(&retour);
+    std::vector<char>* binaire = new std::vector<char>;
+    std::vector<char>* petitBinaire = new std::vector<char>;
+
+    for(unsigned int i = 0;i<binaireA.size();i++)
+    {
+        if (binaireA[i] == binaireB[i])
+        {
+            //std::cout << binaireA[i]<<std::endl;
+            binaire->push_back(binaireA[i]);
+        }
+        else
+        {
+            binaire->push_back('x');
+            petitBinaire->push_back(0);
+        }
+    }
+
+    std::vector<std::vector<char>>* solutions = new std::vector<std::vector<char>>;
+
+    solutions = decalageAToB(*petitBinaire,*binaire);
+
+    for(unsigned int i=0;i<solutions->size();i++) // Pour chaque solution ajoute ou non les aretes
+    {
+        for (unsigned int j = 0; j< solutions->at(i).size(); j++)
+        {
+            if(solutions->at(i)[j] == 0) g->getAretes()[j]->retirer();
+            else  g->getAretes()[j]->ajouter();
+        }
+        std::pair<bool,std::vector<int>*>* connexe = new std::pair<bool,std::vector<int>*>;
+        connexe = g->DFSM();
+        if(connexe->first)
+        {
+            retour.push_back(new Possibilite(&solutions->at(i),connexe->second));
+        }
+    }
+    /*for(auto r : retour) // Pour chaque solution ajoute ou non les aretes
+    {
+        for(unsigned int k =0; k < r->getBinaire()->size();k++)
+        {
+            std::cout<< (int) r->getBinaire()->at(k);
+        }
+        std::cout<<std::endl;
+    }*/
+    /*
+    for(unsigned int i=0;i<retour.size();i++)
+    {
+        if(retour[i]->getPoids()->at(0) < 0)
+        {
+            retour.erase(retour.begin()+i);
+        }
+    }*/
     return retour;
 }
