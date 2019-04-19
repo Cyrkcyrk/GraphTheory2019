@@ -13,12 +13,16 @@
 
 Graphe::Graphe()
 {
+    m_poidsMax.push_back(0);
+    m_poidsMax.push_back(0);
 }
 
 Graphe::Graphe(std::string nomFichierSommet, std::string nomFichierArete)
 {
     lireSommet(nomFichierSommet);
     lireArete(nomFichierArete);
+    m_poidsMax.push_back(0);
+    m_poidsMax.push_back(0);
 }
 
 Graphe::Graphe(std::vector<Sommet*> sommets, std::vector<Arete*> aretes)
@@ -31,6 +35,8 @@ Graphe::Graphe(std::vector<Sommet*> sommets, std::vector<Arete*> aretes)
     {
         m_aretes.insert({a->getId(),a});
     }
+    m_poidsMax.push_back(0);
+    m_poidsMax.push_back(0);
 }
 
 Graphe::~Graphe()
@@ -340,12 +346,14 @@ void Graphe::pareto2(std::vector<Possibilite*>& tableauDesPossibles, bool prim)
     std::vector<int> xOptim;
     xOptim.push_back(tableauDesPossibles[0]->getPoidsDij());
     pareto2.addSommet(0, tableauDesPossibles[0]->getPoids()->at(0), tableauDesPossibles[0]->getPoidsDij(),true); // Ajoute le premier sommet
+
     for(unsigned int i=1;i<tableauDesPossibles.size();i++)// Pour chaque solution
     {
         if(tableauDesPossibles[i]->getPoids()->at(0)<maxY) // Si la solution est meilleure sur l'autre aspect
         {
             if(tableauDesPossibles[i]->getPoids()->at(0) > m_poidsMax[0]) // Tailles du Svgout
             {
+
                 m_poidsMax[0] = tableauDesPossibles[i]->getPoids()->at(0);
             }
             if(tableauDesPossibles[0]->getPoidsDij() > m_poidsMax[1])
@@ -376,7 +384,6 @@ void Graphe::pareto2(std::vector<Possibilite*>& tableauDesPossibles, bool prim)
             pareto2.addSommet(i, tableauDesPossibles[i]->getPoids()->at(0), tableauDesPossibles[i]->getPoidsDij());
         }
     }
-
     Svgfile SVGPareto2("pareto_2.svg", 500, 11000); // Affiche le graphe
     pareto2.dessinerPareto(SVGPareto2);
 }
