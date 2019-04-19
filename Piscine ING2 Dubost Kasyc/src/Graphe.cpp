@@ -38,6 +38,7 @@ Graphe::~Graphe()
     //dtor
 }
 
+/// Dessiner le graphe
 void Graphe::dessinerGraphe(Svgfile& svgout)
 {
     for(auto a : m_aretes)
@@ -51,6 +52,7 @@ void Graphe::dessinerGraphe(Svgfile& svgout)
     }
 }
 
+/// Dessine la frontiere de pareto
 void Graphe::dessinerPareto(Svgfile& svgout)
 {
     std::vector<Sommet*> frontiere;
@@ -81,7 +83,7 @@ void Graphe::dessinerPareto(Svgfile& svgout)
     }
 }
 
-
+/// Lecture des sommets depuis un fichier
 void Graphe::lireSommet(std::string nomFichier)
 {
     /// CODE DU TP 2
@@ -125,6 +127,7 @@ void Graphe::lireSommet(std::string nomFichier)
     }
 }
 
+///Lecture des aretes depuis un fichier
 void Graphe::lireArete(std::string nomFichier)
 {
     std::ifstream ifs{nomFichier};
@@ -159,22 +162,22 @@ void Graphe::lireArete(std::string nomFichier)
     }
 }
 
-
+/// Algorithme de prim pour determiner les arbres couvrants de poids minimal en fonction d'un poids
 Graphe Graphe::algoPrim(int depart, int critere) const
 {
     std::vector<Sommet*> chemin;
     std::vector<Arete*> aretes;
 
-    for(auto s : m_sommets)
+    for(auto s : m_sommets) // Retire tous les sommets
     {
         s.second->retirer();
     }
 
-    m_sommets.find(depart)->second->ajouter();
-    chemin.push_back(m_sommets.find(depart)->second);
+    m_sommets.find(depart)->second->ajouter(); // Ajoute le sommet de depart
+    chemin.push_back(m_sommets.find(depart)->second); // Ajoute le depart au chemin
     unsigned int i=1;
 
-    Arete* b1 = new Arete(100000,new Sommet(-1,1,1),new Sommet(-1,1,1));
+    Arete* b1 = new Arete(100000,new Sommet(-1,1,1),new Sommet(-1,1,1)); // Aretes temoins
     Sommet* b2 = new Sommet(-1,1,1);
     Sommet* b3 = new Sommet(-1,1,1);
     Arete *b4 = new Arete(10000,new Sommet(-1,1,1),new Sommet(-1,1,1));
@@ -186,7 +189,7 @@ Graphe Graphe::algoPrim(int depart, int critere) const
     Sommet* potSommetPoidsMin;
     bool trouve =false;
 
-    while(i<m_sommets.size())
+    while(i<m_sommets.size()) // Tant que tous les sommets ne sont pas decouverts
     {
         potAretePoidsMin = b1;
         potSommetPoidsMin = b2;
@@ -194,37 +197,37 @@ Graphe Graphe::algoPrim(int depart, int critere) const
         aretePoidsMin = b4;
 
         trouve = false;
-        for(auto s : m_sommets)
+        for(auto s : m_sommets) // Parcourt les sommets
         {
-            if(s.second->isAjoute())
+            if(s.second->isAjoute()) // Si il est ajoute
             {
 
-                potSommetPoidsMin = s.second->getProcheVoisin(critere).second;
+                potSommetPoidsMin = s.second->getProcheVoisin(critere).second; // Un potentiel successeur serait le voisin le plus proche
                 potAretePoidsMin = s.second->getProcheVoisin(critere).first;
-                if(potSommetPoidsMin == nullptr)
+                if(potSommetPoidsMin == nullptr) // Si aucun voisin on passe ce sommet
                 {
                     continue;
                 }
-                if(potAretePoidsMin->getPoids()[critere] < aretePoidsMin->getPoids()[critere])
+                if(potAretePoidsMin->getPoids()[critere] < aretePoidsMin->getPoids()[critere]) // Si le poids est plus petit selon ce critere
                 {
-                    sommetPoidsMin = potSommetPoidsMin;
+                    sommetPoidsMin = potSommetPoidsMin; // Le sommet est plus proche
                     aretePoidsMin = potAretePoidsMin;
                     trouve = true;
                 }
             }
         }
-        if (trouve)
+        if (trouve) // si on a trouve un sommet plus proche
         {
-            if(aretePoidsMin->getS1()->isAjoute() && !aretePoidsMin->getS2()->isAjoute())
+            if(aretePoidsMin->getS1()->isAjoute() && !aretePoidsMin->getS2()->isAjoute()) // Si le sommet n'est pas ajoute
             {
-                aretePoidsMin->getS2()->ajouter();
+                aretePoidsMin->getS2()->ajouter(); // L'ajoute
                 chemin.push_back(sommetPoidsMin);
                 aretes.push_back(aretePoidsMin);
                 i++;
             }
-            if(aretePoidsMin->getS2()->isAjoute() && !aretePoidsMin->getS1()->isAjoute())
+            if(aretePoidsMin->getS2()->isAjoute() && !aretePoidsMin->getS1()->isAjoute())// Si le sommet n'est pas ajoute
             {
-                aretePoidsMin->getS1()->ajouter();
+                aretePoidsMin->getS1()->ajouter();// L'ajoute
                 chemin.push_back(sommetPoidsMin);
                 aretes.push_back(aretePoidsMin);
                 i++;
@@ -232,12 +235,13 @@ Graphe Graphe::algoPrim(int depart, int critere) const
         }
     }
 
-    Graphe g(chemin,aretes);
+    Graphe g(chemin,aretes); // Renvoie le graphe de prim
     return g;
 }
 
 
-bool sortCritere(Possibilite* a, Possibilite* b)
+/// Critere de tri du vecteur de possibilite pour pareto
+bool Graphe::sortCritere(Possibilite* a, Possibilite* b)
 {
     if (a->getPoids()->at(0) < b->getPoids()->at(0))
     {
@@ -250,7 +254,8 @@ bool sortCritere(Possibilite* a, Possibilite* b)
     else return false;
 }
 
-bool sortCritere2(Possibilite* a, Possibilite* b)
+/// Critere de tri du vecteur de possibilite pour pareto 2
+bool Graphe::sortCritere2(Possibilite* a, Possibilite* b)
 {
     if (a->getPoidsDij() < b->getPoidsDij())
     {
@@ -263,65 +268,22 @@ bool sortCritere2(Possibilite* a, Possibilite* b)
     else return false;
 }
 
-
-void Graphe::pareto(std::vector<Possibilite*>& tableauDesPossibles, bool paretoPrim)
+/// Frontiere de pareto avec les solutions cycliques et l'algorithme de Dijkstra
+void Graphe::pareto2(std::vector<Possibilite*>& tableauDesPossibles, bool prim)
 {
-    //maths::compteur_etat_possibles(m_sommets.size()-1,m_aretes.size(),this); // Tableau des possibles
-
-    std:: cout << "Sommet : " << m_sommets.size() << " - Arrete : " << m_aretes.size() << std::endl;
-
-    std::cout <<"Nbr possibilites : "<< tableauDesPossibles.size() << std::endl;
-
-    Graphe pareto;
-
-    std::cout<<"Sorting..."<<std::endl;
-    std::sort(tableauDesPossibles.begin(), tableauDesPossibles.end(),sortCritere);
-    std::cout<<"Fin du tri"<<std::endl;
-
-    double maxY = tableauDesPossibles[0]->getPoids()->at(1);
-    std::vector<int> xOptim;
-    xOptim.push_back(tableauDesPossibles[0]->getPoids()->at(0));
-    pareto.addSommet(0, tableauDesPossibles[0]->getPoids()->at(0), tableauDesPossibles[0]->getPoids()->at(1),true);
-    for(unsigned int i=1;i<tableauDesPossibles.size();i++)
+    if(prim)
     {
-        if(tableauDesPossibles[i]->getPoids()->at(1)<maxY)
-        {
-            bool memeX = false;
-            for(auto x : xOptim)
-            {
-                if(x==tableauDesPossibles[i]->getPoids()->at(0))
-                {
-                    memeX = true;
-                }
-            }
-            if(!memeX)
-            {
-                xOptim.push_back(tableauDesPossibles[i]->getPoids()->at(0));
-                maxY = tableauDesPossibles[i]->getPoids()->at(1);
-                pareto.addSommet(i, tableauDesPossibles[i]->getPoids()->at(0), tableauDesPossibles[i]->getPoids()->at(1),true);
-            }
-            else
-            {
-                pareto.addSommet(i, tableauDesPossibles[i]->getPoids()->at(0), tableauDesPossibles[i]->getPoids()->at(1));
-            }
-        }
-        else
-        {
-            pareto.addSommet(i, tableauDesPossibles[i]->getPoids()->at(0), tableauDesPossibles[i]->getPoids()->at(1));
-        }
-    }
-
-    Svgfile SVGPareto("pareto_1.svg");
-    pareto.dessinerPareto(SVGPareto);
-
-    if (paretoPrim)
-    {
+        std::cout << "Impossible d'effectuer pareto cyclique sur un graphe de Prim !" << std::endl;
         return;
     }
-
+    if(tableauDesPossibles.size() == 0)
+    {
+        std::cout << "Erreur aucune possibilite reliant tous les sommets"<<std::endl;
+        return;
+    }
     Graphe pareto2;
-    std::vector<Possibilite*> newSols;
-    if(!paretoPrim)
+    std::vector<Possibilite*> newSols; // Determination des solutions avec cycle
+    if(!prim)
     {
         for(unsigned int i = m_sommets.size(); i <= m_aretes.size();i++)
         {
@@ -337,12 +299,12 @@ void Graphe::pareto(std::vector<Possibilite*>& tableauDesPossibles, bool paretoP
         }
     }
 
-    std::cout << tableauDesPossibles.size();
+    std::cout << "Nombre de possibilite : "<< tableauDesPossibles.size();
 
     std::cout << std::endl;
     int nbDij = 0;
 
-    for(unsigned int a=0;a<tableauDesPossibles.size();a++)
+    for(unsigned int a=0;a<tableauDesPossibles.size();a++) // Pour chaque possibilite
     {
         for(unsigned int i=0;i<m_aretes.size();i++) // Pour chaque arete
         {
@@ -355,16 +317,16 @@ void Graphe::pareto(std::vector<Possibilite*>& tableauDesPossibles, bool paretoP
         for(auto s : m_sommets)
         {
             if(nbDij%10000 == 0) std::cout<< nbDij << " Dijkstra effectues"<<std::endl;
-            tableauDesPossibles[a]->setPoidsDij(tableauDesPossibles[a]->getPoidsDij()+this->algoDijkstra(s.second->getId()));
+            tableauDesPossibles[a]->setPoidsDij(tableauDesPossibles[a]->getPoidsDij()+this->algoDijkstra(s.second->getId())); // Effectue la somme des Dijkstra en partant de chaque point
             nbDij++;
         }
     }
 
     std::cout<<"Sorting..."<<std::endl;
-    std::sort(tableauDesPossibles.begin(), tableauDesPossibles.end(),sortCritere2);
+    std::sort(tableauDesPossibles.begin(), tableauDesPossibles.end(),Graphe::sortCritere2);// Tri des solution par ordre croissant de l'un des critere
     std::cout<<"Fin du tri"<<std::endl;
 
-    for(unsigned int a=1;a<tableauDesPossibles.size()-1;a++)
+    for(unsigned int a=1;a<tableauDesPossibles.size()-1;a++) // Gestion des doublons
     {
         if((tableauDesPossibles[a]->getPoids()->at(0) == tableauDesPossibles[a-1]->getPoids()->at(0) && tableauDesPossibles[a]->getPoidsDij() == tableauDesPossibles[a-1]->getPoidsDij()) || tableauDesPossibles[a]->getPoids()->at(0) < 0)
         {
@@ -373,43 +335,109 @@ void Graphe::pareto(std::vector<Possibilite*>& tableauDesPossibles, bool paretoP
         }
     }
 
-    maxY = tableauDesPossibles[0]->getPoids()->at(0);
-    xOptim.clear();
+    /// DETERMINATION DE LA FRONTIERE DE PARETO
+    double maxY = tableauDesPossibles[0]->getPoids()->at(0);
+    std::vector<int> xOptim;
     xOptim.push_back(tableauDesPossibles[0]->getPoidsDij());
-    pareto2.addSommet(0, tableauDesPossibles[0]->getPoids()->at(0), tableauDesPossibles[0]->getPoidsDij(),true);
-    for(unsigned int i=1;i<tableauDesPossibles.size();i++)
+    pareto2.addSommet(0, tableauDesPossibles[0]->getPoids()->at(0), tableauDesPossibles[0]->getPoidsDij(),true); // Ajoute le premier sommet
+    for(unsigned int i=1;i<tableauDesPossibles.size();i++)// Pour chaque solution
     {
-        if(tableauDesPossibles[i]->getPoids()->at(0)<maxY)
+        if(tableauDesPossibles[i]->getPoids()->at(0)<maxY) // Si la solution est meilleure sur l'autre aspect
         {
+            if(tableauDesPossibles[i]->getPoids()->at(0) > m_poidsMax[0]) // Tailles du Svgout
+            {
+                m_poidsMax[0] = tableauDesPossibles[i]->getPoids()->at(0);
+            }
+            if(tableauDesPossibles[0]->getPoidsDij() > m_poidsMax[1])
+            {
+                m_poidsMax[0] = tableauDesPossibles[0]->getPoidsDij();
+            }
             bool memeX = false;
-            for(auto x : xOptim)
+            for(auto x : xOptim) // Et que c'est la plus basse a ce X
             {
                 if(x==tableauDesPossibles[i]->getPoidsDij())
                 {
                     memeX = true;
                 }
             }
-            if(!memeX)
+            if(!memeX) // Ajoute la solution EN FRONTIERE DE PARETO
             {
                 xOptim.push_back(tableauDesPossibles[i]->getPoidsDij());
                 maxY = tableauDesPossibles[i]->getPoids()->at(0);
                 pareto2.addSommet(i, tableauDesPossibles[i]->getPoids()->at(0), tableauDesPossibles[i]->getPoidsDij(),true);
             }
-            else
+            else // Ajoute la solution dominee
             {
                 pareto2.addSommet(i, tableauDesPossibles[i]->getPoids()->at(0), tableauDesPossibles[i]->getPoidsDij());
             }
         }
-        else
+        else // Ajoute la solution dominee
         {
             pareto2.addSommet(i, tableauDesPossibles[i]->getPoids()->at(0), tableauDesPossibles[i]->getPoidsDij());
         }
     }
 
-    Svgfile SVGPareto2("pareto_2.svg", 500, 11000);
+    Svgfile SVGPareto2("pareto_2.svg", 500, 11000); // Affiche le graphe
     pareto2.dessinerPareto(SVGPareto2);
 }
 
+/// Frontiere de pareto
+void Graphe::pareto(std::vector<Possibilite*>& tableauDesPossibles)
+{
+    if(tableauDesPossibles.size() == 0)
+    {
+        std::cout << "Erreur aucune possibilite reliant tous les sommets"<<std::endl;
+        return;
+    }
+    std:: cout << "Sommet : " << m_sommets.size() << " - Arrete : " << m_aretes.size() << std::endl;
+
+    std::cout <<"Nbr possibilites : "<< tableauDesPossibles.size() << std::endl;
+
+    Graphe pareto;
+
+    std::cout<<"Sorting..."<<std::endl;
+    std::sort(tableauDesPossibles.begin(), tableauDesPossibles.end(),Graphe::sortCritere); // Tri des solution par ordre croissant de l'un des critere
+    std::cout<<"Fin du tri"<<std::endl;
+
+
+    /// DETERMINATION DE LA FRONTIERE DE PARETO
+    double maxY = tableauDesPossibles[0]->getPoids()->at(1); // La meilleure solution sur un aspect
+    std::vector<int> xOptim;
+    xOptim.push_back(tableauDesPossibles[0]->getPoids()->at(0)); // Ajoute le x de cette solution
+    pareto.addSommet(0, tableauDesPossibles[0]->getPoids()->at(0), tableauDesPossibles[0]->getPoids()->at(1),true); // Ajoute le sommet au graphe
+    for(unsigned int i=1;i<tableauDesPossibles.size();i++) // Pour chaque solution
+    {
+        if(tableauDesPossibles[i]->getPoids()->at(1)<maxY) // Si la solution est meilleure sur l'autre aspect
+        {
+            bool memeX = false;
+            for(auto x : xOptim)
+            {
+                if(x==tableauDesPossibles[i]->getPoids()->at(0)) // Si elle est la plus basse
+                {
+                    memeX = true;
+                }
+            }
+            if(!memeX)
+            {
+                xOptim.push_back(tableauDesPossibles[i]->getPoids()->at(0));
+                maxY = tableauDesPossibles[i]->getPoids()->at(1);
+                pareto.addSommet(i, tableauDesPossibles[i]->getPoids()->at(0), tableauDesPossibles[i]->getPoids()->at(1),true); // Ajoute la solution de pareto
+            }
+            else// Ajoute la solution dominee
+            {
+                pareto.addSommet(i, tableauDesPossibles[i]->getPoids()->at(0), tableauDesPossibles[i]->getPoids()->at(1));
+            }
+        }
+        else// Ajoute la solution dominee
+        {
+            pareto.addSommet(i, tableauDesPossibles[i]->getPoids()->at(0), tableauDesPossibles[i]->getPoids()->at(1));
+        }
+    }
+    Svgfile SVGPareto("pareto_1.svg");
+    pareto.dessinerPareto(SVGPareto);
+}
+
+/// DFS sur les sommets marques
 std::pair<bool,std::vector<int>*>* Graphe::DFSM() //DFS Marque
 {
     Sommet*s0 = m_sommets[0];
@@ -424,84 +452,79 @@ std::pair<bool,std::vector<int>*>* Graphe::DFSM() //DFS Marque
     return s0->DFSM(nbSommetM);
 }
 
-
+/// Ajoute un sommet a la map des sommets
 void Graphe::addSommet(int id, double X, double Y, bool optimum)
 {
     m_sommets.insert({id, new Sommet(id, X, Y, optimum)});
 }
 
-bool triAretesCroissantes(Arete* a1, Arete* a2)
+/// Tri les aretes par ordre croissant
+bool Graphe::triAretesCroissantes(Arete* a1, Arete* a2)
 {
     return a1->getPoids()[1] > a2->getPoids()[1];
 }
 
+/// Algorithme de dijkstra qui part d'un sommet de depart et renvoie la somme des distances a tous les points
 int Graphe::algoDijkstra(int depart)
 {
     for(auto s : m_sommets) // Trie toutes les aretes dans les sommets par ordre croissant
     {
-        std::sort(s.second->getAretes()->begin(), s.second->getAretes()->end(),triAretesCroissantes);
+        std::sort(s.second->getAretes()->begin(), s.second->getAretes()->end(),Graphe::triAretesCroissantes);
     }
 
-    auto cmp = [](Sommet* s1, Sommet* s2)
+    auto cmp = [](Sommet* s1, Sommet* s2) // Lambda du comparateur pour la priority queue
     {
-        /*if(s1->getD()+s1->getDistancePlusProcheVoisin() > s2->getD()+s2->getDistancePlusProcheVoisin())
-        {
-              std::cout << s1->getD()+s1->getDistancePlusProcheVoisin() << " gagne contre " << s2->getD()+s2->getDistancePlusProcheVoisin() <<std::endl;
-        }
-        else std::cout << s2->getD()+s2->getDistancePlusProcheVoisin() << " perd contre " << s1->getD()+s1->getDistancePlusProcheVoisin()<<std::endl;
-        */return s1->getD()+s1->getDistancePlusProcheVoisin() > s2->getD()+s2->getDistancePlusProcheVoisin();
+        return s1->getD()+s1->getDistancePlusProcheVoisin() > s2->getD()+s2->getDistancePlusProcheVoisin();
     };
     std::priority_queue<Sommet*, std::vector<Sommet*>, decltype(cmp)> myqueue(cmp);
 
     std::unordered_map<Sommet*,int> dist;
     std::unordered_set<Sommet*> decouverts;
 
-    for(auto s : m_sommets)
+    for(auto s : m_sommets) // Pour chaque sommet
     {
-         if(s.second == m_sommets.at(depart))
+         if(s.second == m_sommets.at(depart)) // Si le sommet est celui de depart
          {
-             dist.insert({s.second, 0});
+             dist.insert({s.second, 0}); // Distance est 0
              s.second->setDistance(0);
          }
          else
          {
-             dist.insert({s.second, 100000});
+             dist.insert({s.second, 100000}); // Distance est inf
              s.second->setDistance(100000);
          }
     }
 
-    myqueue.push(m_sommets.at(depart));
+    myqueue.push(m_sommets.at(depart)); // Ajoute le sommet de depart a la queue
     Sommet* s;
 
-    while(!myqueue.empty())
+    while(!myqueue.empty()) // Tant que la queue n'est pas vide
     {
-        s = myqueue.top();
+        s = myqueue.top(); // On pointe le sommet
 
-        if(decouverts.find(myqueue.top())==decouverts.end())
+        if(decouverts.find(myqueue.top())==decouverts.end()) // Si le haut de la pile n'est pas decouvert
         {
-            decouverts.insert(myqueue.top());
+            decouverts.insert(myqueue.top()); // Decouvre le sommet
         }
-        myqueue.pop();
-        for(auto voisin : s->getVoisins())
+        myqueue.pop(); // Defile
+        for(auto voisin : s->getVoisins()) // Pour chaque voisin
         {
-            if (decouverts.find(voisin) == decouverts.end() && s->getArete(voisin)->isAjoute())
+            if (decouverts.find(voisin) == decouverts.end() && s->getArete(voisin)->isAjoute()) // Si le voisin n'est pas decouvert et l'arete vers ce dernier est ajoute
             {
-                myqueue.push(voisin);
-                if(dist.at(s)+s->getArete(voisin)->getPoids()[1]<dist.at(voisin))
+                myqueue.push(voisin); // Ajoute le voisin a la file
+                if(dist.at(s)+s->getArete(voisin)->getPoids()[1]<dist.at(voisin)) // Si la distance en passant par la est plus courte
                 {
-                    //std::cout << "Ajouter " << voisin->getId() << " depuis " << s->getId() << " coute "<<dist.at(s)+s->getArete(voisin)->getPoids()[1]<<std::endl;
-                    dist.at(voisin) = dist.at(s)+s->getArete(voisin)->getPoids()[1];
+                    dist.at(voisin) = dist.at(s)+s->getArete(voisin)->getPoids()[1]; // Mets a jour la distance
                     voisin->setDistance(dist.at(s)+s->getArete(voisin)->getPoids()[1]);
                 }
             }
         }
     }
     int somme = 0;
-    for(auto a : dist)
+    for(auto a : dist) // Somme toutes les distances
     {
         somme+=a.second;
     }
-    return somme;
-
+    return somme; // Renvoie la somme
 }
 
