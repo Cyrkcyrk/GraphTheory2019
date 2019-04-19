@@ -117,7 +117,6 @@ std::vector<unsigned int> maths::decalage(std::vector<unsigned int> position, in
     }
     else if (nbADecaler-1 < 0)
     {
-
         std::vector<unsigned int> tmp;
         tmp.push_back(-1);
         return tmp;
@@ -155,32 +154,11 @@ std::vector<Possibilite*> maths::compteur_etat_possibles(int nb_sommet, int nb_a
             binaire->at(position[j]) = 1;
             g->getAretes()[position[j]]->ajouter();
         }
-
-        std::pair<bool,std::vector<int>*> connexe = g->DFSM();
-        if(connexe.first)
+        std::pair<bool,std::vector<int>*>* connexe = new std::pair<bool,std::vector<int>*>;
+        connexe = g->DFSM();
+        if(connexe->first)
         {
-            if (retour.size() == 0)
-            {
-                retour.push_back(new Possibilite(binaire,connexe.second));
-            }
-            else
-            {
-                bool different = true;
-                for (int i=0 ; i<retour.size(); i++)
-                {
-                    if ((connexe.second->at(0) == retour[i]->getPoids()->at(0) && connexe.second->at(1) == retour[i]->getPoids()->at(1)) || connexe.second->at(0) < 0 || connexe.second->at(1) < 0)
-                    {
-                        different = false;
-                        i = retour.size();
-                    }
-                }
-                if(different)
-                {
-                    std::cout << "ON PUSHBACK 1: " << connexe.second->at(0) <<  "   -   2: " << connexe.second->at(1) << std::endl;
-                    retour.push_back(new Possibilite(binaire,connexe.second));
-                }
-
-            }
+            retour.push_back(new Possibilite(binaire,connexe->second));
         }
     }
 
@@ -209,33 +187,39 @@ std::vector<Possibilite*> maths::compteur_etat_possibles(int nb_sommet, int nb_a
             g->getAretes()[position[j]]->ajouter();
         }
 
-        std::pair<bool,std::vector<int>*> connexe = g->DFSM();
+        std::pair<bool,std::vector<int>*>* connexe = new std::pair<bool,std::vector<int>*>;
+        connexe = g->DFSM();
 
-        if(connexe.first)
+        if(connexe->first)
         {
-            if (retour.size() == 0)
+            retour.push_back(new Possibilite(binaire,connexe->second));
+        }
+    }
+
+     /*
+            if (retour.size() == 0 && connexe->second->at(0) > 0 && connexe->second->at(1) > 0)
             {
-                retour.push_back(new Possibilite(binaire,connexe.second));
+                retour.push_back(new Possibilite(binaire,connexe->second));
             }
             else
             {
                 bool different = true;
-                for (int i=0 ; i<retour.size(); i++)
+                for (unsigned int i=0 ; i<retour.size(); i++)
                 {
-                    if ((connexe.second->at(0) == retour[i]->getPoids()->at(0) && connexe.second->at(1) == retour[i]->getPoids()->at(1)) || connexe.second->at(0) < 0 || connexe.second->at(1) < 0)
+                    if ((connexe->second->at(0) == retour[i]->getPoids()->at(0) && connexe->second->at(1) == retour[i]->getPoids()->at(1)) || connexe->second->at(0) < 0 || connexe->second->at(1) < 0)
                     {
                         different = false;
                         i = retour.size();
                     }
                 }
-                if(different)
+                if(different && connexe->second->at(0) > 0 && connexe->second->at(1) > 0)
                 {
-                    retour.push_back(new Possibilite(binaire,connexe.second));
+                    retour.push_back(new Possibilite(binaire,connexe->second));
                 }
 
             }
-        }
-    }
+            */
+
     /***$
     for(unsigned int i=0;i<retour.size();i++)
     {
@@ -260,6 +244,12 @@ std::vector<Possibilite*> maths::compteur_etat_possibles(int nb_sommet, int nb_a
         retour.push_back(binaire);
     }
     */
-
+    for(unsigned int i=0;i<retour.size();i++)
+    {
+        if(retour[i]->getPoids()->at(0) < 0)
+        {
+            retour.erase(retour.begin()+i);
+        }
+    }
     return retour;
 }

@@ -63,13 +63,13 @@ void Graphe::dessinerPareto(Svgfile& svgout)
         }
         else
         {
-            s.second->dessiner(svgout, 6, false, POINT_PARETO_RAYON, POINT_COULEUR, 0.1);
+            s.second->dessiner(svgout, 1, false, POINT_PARETO_RAYON, POINT_COULEUR, 0.1);
         }
     }
 
     for(auto s : frontiere)
     {
-        svgout.addCircle(s->getCoord().getX()*6, s->getCoord().getY()*6, POINT_PARETO_RAYON, POINT_PARETO_COULEUR_OPTIMUM);
+        svgout.addCircle(s->getCoord().getX()*5, s->getCoord().getY(), POINT_PARETO_RAYON, POINT_PARETO_COULEUR_OPTIMUM, PARETO_FONT_SIZE);
 
         std::stringstream stream;
         stream << std::fixed << std::setprecision(1)
@@ -77,7 +77,7 @@ void Graphe::dessinerPareto(Svgfile& svgout)
                << " / "
                << s->getCoord().getY();
 
-        svgout.addText(s->getCoord().getX()*6, s->getCoord().getY()*6, stream.str(), "rgb(50, 50, 50)");
+        svgout.addText(s->getCoord().getX()*5, s->getCoord().getY(), stream.str(), "rgb(50, 50, 50)", PARETO_FONT_SIZE);
     }
 }
 
@@ -346,25 +346,31 @@ void Graphe::pareto()
     pareto.dessinerPareto(SVGPareto);
 
     Graphe pareto2;
+    std::vector<Possibilite*> newSols;
     for(unsigned int i = m_sommets.size(); i <= m_aretes.size();i++)
     {
-        std::vector<Possibilite*> newSols = maths::compteur_etat_possibles(i,m_aretes.size(),this);
+        newSols.clear();
+        newSols = maths::compteur_etat_possibles(i,m_aretes.size(),this);
         for(auto sol : newSols)
         {
-            tableauDesPossibles.push_back(sol);
+            if(sol->getPoids()->at(0)>=0)
+            {
+                tableauDesPossibles.push_back(sol);
+            }
         }
     }
+
     std::cout << tableauDesPossibles.size();
 
+
     std::cout << std::endl;
-    std::vector<int> coords;
-    std::vector<int> coordsReelOrdre;
     int nbDij = 0;
-    for(auto p : tableauDesPossibles) // Pour chaque possibilite
+
+    for(unsigned int a=0;a<tableauDesPossibles.size();a++)
     {
         for(unsigned int i=0;i<m_aretes.size();i++) // Pour chaque arete
         {
-            if(p->getBinaire()->at(i) == 1) // Ajoute ou non l'arete
+            if(tableauDesPossibles[a]->getBinaire()->at(i) == 1) // Ajoute ou non l'arete
             {
                 m_aretes[i]->ajouter();
             }
@@ -372,13 +378,22 @@ void Graphe::pareto()
         }
         for(auto s : m_sommets)
         {
+
             if(nbDij%10000 == 0) std::cout<< nbDij << " dijkstra effectues"<<std::endl;
-            p->setPoidsDij(p->getPoidsDij()+this->algoDijkstra(s.second->getId()));
+            tableauDesPossibles[a]->setPoidsDij(tableauDesPossibles[a]->getPoidsDij()+this->algoDijkstra(s.second->getId()));
             nbDij++;
         }
     }
 
     std::sort(tableauDesPossibles.begin(), tableauDesPossibles.end(),sortCritere2);
+    for(unsigned int a=1;a<tableauDesPossibles.size()-1;a++)
+    {
+        if(tableauDesPossibles[a]->getPoids()->at(0) == tableauDesPossibles[a-1]->getPoids()->at(0) && tableauDesPossibles[a]->getPoidsDij() == tableauDesPossibles[a-1]->getPoidsDij() || tableauDesPossibles[a]->getPoids()->at(0) < 0)
+        {
+            tableauDesPossibles.erase(tableauDesPossibles.begin()+a);
+            a--;
+        }
+    }
 
     maxY = tableauDesPossibles[0]->getPoids()->at(0);
     xOptim.clear();
@@ -413,11 +428,11 @@ void Graphe::pareto()
         }
     }
 
-    Svgfile SVGPareto2("pareto_2.svg");;
+    Svgfile SVGPareto2("pareto_2.svg", 500, 11000);
     pareto2.dessinerPareto(SVGPareto2);
 }
 
-std::pair<bool,std::vector<int>*> Graphe::DFSM() //DFS Marque
+std::pair<bool,std::vector<int>*>* Graphe::DFSM() //DFS Marque
 {
     Sommet*s0 = m_sommets[0];
     int nbSommetM = 0;

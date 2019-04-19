@@ -37,7 +37,7 @@ class Graphe
         std::unordered_map<int,Arete*> getAretes(){return m_aretes;};
         std::unordered_map<int,Sommet*> getSommets(){return m_sommets;};
 
-        std::pair<bool,std::vector<int>*> DFSM();
+        std::pair<bool,std::vector<int>*>* DFSM();
 
 
         int algoDijkstra(int depart);

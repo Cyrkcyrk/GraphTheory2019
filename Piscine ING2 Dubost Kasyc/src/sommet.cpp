@@ -80,7 +80,7 @@ std::unordered_set<const Sommet*> Sommet::rechercherCC(std::unordered_set<const 
     return cc;
 }
 
-std::pair<bool,std::vector<int>*> Sommet::DFSM(unsigned int nbSommets)
+std::pair<bool,std::vector<int>*>* Sommet::DFSM(unsigned int nbSommets)
 {
     std::unordered_set<Sommet*> decouverts;
     std::stack<Sommet*> pile;
@@ -108,11 +108,19 @@ std::pair<bool,std::vector<int>*> Sommet::DFSM(unsigned int nbSommets)
     }
     if(decouverts.size() == nbSommets)
     {
-        return std::make_pair(true,poidsChemin);
+        if(poidsChemin->at(0) < 0 )std::cout << poidsChemin->at(0)<< " ";
+        if(poidsChemin->at(1)  < 0 )std::cout << poidsChemin->at(1)<< " ";
+        std::pair<bool,std::vector<int>*>* a = new std::pair<bool,std::vector<int>*>;
+        *a = std::make_pair(true,poidsChemin);
+        return a;
     }
     else
     {
-        return std::make_pair(false,poidsChemin);
+        if(poidsChemin->at(0) < 0 )std::cout << poidsChemin->at(0)<< " FAUX";
+        if(poidsChemin->at(1) < 0 )std::cout << poidsChemin->at(1)<< " FAUX";
+        std::pair<bool,std::vector<int>*>* a = new std::pair<bool,std::vector<int>*>;
+        *a = std::make_pair(false,poidsChemin);
+        return a;
     }
 }
 
@@ -138,6 +146,7 @@ int Sommet::getDistancePlusProcheVoisin()
             return aretes->getPoids()[1];
         }
     }
+    return 1000000;
 }
 
 Sommet* Sommet::getPlusProcheVoisin()
@@ -158,9 +167,9 @@ Sommet* Sommet::getPlusProcheVoisin()
 
 void Sommet::dessiner(Svgfile& svgout, double coef, bool afficher_texte, double rayon, std::string couleur, double opacity)
 {
-    svgout.addCircle(m_coord.getX()*coef, m_coord.getY()*coef, rayon, couleur, opacity);
+    svgout.addCircle(m_coord.getX()*coef*5, m_coord.getY()*coef, rayon, couleur, opacity);
     if (afficher_texte)
     {
-        svgout.addText(m_coord.getX()*coef, m_coord.getY()*coef+rayon/2, std::to_string(m_id), POINT_TEXT, 9, true);
+        svgout.addText(m_coord.getX()*coef*5,m_coord.getY()*coef+rayon/2, std::to_string(m_id), POINT_TEXT, 9, true);
     }
 }
