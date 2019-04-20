@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <algorithm>
 
 #include "stdio.h"
 #include "Possibilite.h"
@@ -108,25 +109,18 @@ std::vector<std::vector<char>> maths::combinaisonsDe1(int ordre, int taille)
 }
 
 
-std::vector<unsigned int> maths::decalage(std::vector<unsigned int> position, int nbADecaler)
+std::vector<std::string> maths::decalage(std::string binaire)
 {
-    if (position[nbADecaler] > position.size()-1 - nbADecaler)
+    std::vector<std::string> solutions;
+    int i = 0;
+    do
     {
-        position[nbADecaler]--;
-        return position;
-    }
-    else if (nbADecaler-1 < 0)
-    {
-        std::vector<unsigned int> tmp;
-        tmp.push_back(-1);
-        return tmp;
-    }
-    else
-    {
-        position = maths::decalage(position, nbADecaler-1);
-        position[nbADecaler] = position[nbADecaler-1]-1;
-        return position;
-    }
+        i++;
+
+        solutions.push_back(binaire);
+    }while(std::next_permutation(binaire.begin(), binaire.end()));
+   std::cout << i << " Solutions" << std::endl;
+    return solutions;
 }
 
 std::vector<Possibilite*> maths::compteur_etat_possibles(int nb_sommet, int nb_arete, Graphe* g)
@@ -142,7 +136,44 @@ std::vector<Possibilite*> maths::compteur_etat_possibles(int nb_sommet, int nb_a
         position.push_back(nb_arete-1-i);
     }
 
+
+    std::string binaire;
+    for (int j = 0; j< nb_arete; j++)
     {
+        binaire = binaire + std::string("0");
+        g->getAretes()[j]->retirer();
+    }
+    for (unsigned int j=0; j< position.size(); j++)
+    {
+        binaire.replace(position[j],1, std::string("1"));
+        g->getAretes()[position[j]]->ajouter();
+    }
+    std::pair<bool,std::vector<int>*>* connexe = new std::pair<bool,std::vector<int>*>;
+    connexe = g->DFSM();
+    if(connexe->first)
+    {
+        retour.push_back(new Possibilite(binaire,connexe->second));
+    }
+
+    std::vector<std::string>solutions = maths::decalage(binaire);
+    int com = 0;
+    for(auto sol : solutions)
+    {
+        if (com%50000==0)std::cout << com << " DFS effectues" << std::endl;
+        com++;
+        for (unsigned int j = 0; j< sol.size(); j++)
+        {
+            if(sol.at(j) == '0') g->getAretes()[j]->retirer();
+            else  g->getAretes()[j]->ajouter();
+        }
+        std::pair<bool,std::vector<int>*>* connexe = new std::pair<bool,std::vector<int>*>;
+        connexe = g->DFSM();
+        if(connexe->first)
+        {
+            retour.push_back(new Possibilite(sol,connexe->second));
+        }
+    }
+        /*/// Creation du binaire
         std::vector<char>* binaire = new std::vector<char>;
         for (int j = 0; j< nb_arete; j++)
         {
@@ -154,38 +185,6 @@ std::vector<Possibilite*> maths::compteur_etat_possibles(int nb_sommet, int nb_a
             binaire->at(position[j]) = 1;
             g->getAretes()[position[j]]->ajouter();
         }
-        std::pair<bool,std::vector<int>*>* connexe = new std::pair<bool,std::vector<int>*>;
-        connexe = g->DFSM();
-        if(connexe->first)
-        {
-            retour.push_back(new Possibilite(binaire,connexe->second));
-        }
-    }
-
-    for(unsigned int i=1;; i++)
-    {
-        if (i%10000 == 0)
-            std::cout << "iteration n " << i << std::endl;
-        position = maths::decalage(position, nb_sommet-1);
-
-        if (position.size() == 1 && position[0] == -1)
-        {
-            break;
-        }
-
-
-        /// Creation du binaire
-        std::vector<char>* binaire = new std::vector<char>;
-        for (int j = 0; j< nb_arete; j++)
-        {
-            binaire->push_back(0);
-            g->getAretes()[j]->retirer();
-        }
-        for (unsigned int j=0; j< position.size(); j++)
-        {
-            binaire->at(position[j]) = 1;
-            g->getAretes()[position[j]]->ajouter();
-        }
 
         std::pair<bool,std::vector<int>*>* connexe = new std::pair<bool,std::vector<int>*>;
         connexe = g->DFSM();
@@ -194,7 +193,7 @@ std::vector<Possibilite*> maths::compteur_etat_possibles(int nb_sommet, int nb_a
         {
             retour.push_back(new Possibilite(binaire,connexe->second));
         }
-    }
+    }*/
 
      /*
             if (retour.size() == 0 && connexe->second->at(0) > 0 && connexe->second->at(1) > 0)
@@ -244,6 +243,7 @@ std::vector<Possibilite*> maths::compteur_etat_possibles(int nb_sommet, int nb_a
         retour.push_back(binaire);
     }
     */
+
     for(unsigned int i=0;i<retour.size();i++)
     {
         if(retour[i]->getPoids()->at(0) < 0)
@@ -375,9 +375,14 @@ std::vector<Possibilite*> maths::compteur_etat_possiblesPrim(std::vector<char> b
         }
         std::pair<bool,std::vector<int>*>* connexe = new std::pair<bool,std::vector<int>*>;
         connexe = g->DFSM();
+        std::string sol;
+        for(auto c: solutions->at(i))
+        {
+            sol.append(1,c);
+        }
         if(connexe->first)
         {
-            retour.push_back(new Possibilite(&solutions->at(i),connexe->second));
+            retour.push_back(new Possibilite(sol,connexe->second));
         }
     }
     /*for(auto r : retour) // Pour chaque solution ajoute ou non les aretes

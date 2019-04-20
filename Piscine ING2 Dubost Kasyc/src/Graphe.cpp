@@ -287,6 +287,7 @@ void Graphe::pareto2(std::vector<Possibilite*>& tableauDesPossibles, bool prim)
         std::cout << "Erreur aucune possibilite reliant tous les sommets"<<std::endl;
         return;
     }
+
     Graphe pareto2;
     std::vector<Possibilite*> newSols; // Determination des solutions avec cycle
     if(!prim)
@@ -306,25 +307,29 @@ void Graphe::pareto2(std::vector<Possibilite*>& tableauDesPossibles, bool prim)
     }
 
     std::cout << "Nombre de possibilite : "<< tableauDesPossibles.size();
-
     std::cout << std::endl;
-    int nbDij = 0;
 
+    int nbDij = 0;
+    for(auto s : m_sommets)
+    {
+        std::sort(s.second->getAretes()->begin(), s.second->getAretes()->end(),Graphe::triAretesCroissantes);
+    }
     for(unsigned int a=0;a<tableauDesPossibles.size();a++) // Pour chaque possibilite
     {
         for(unsigned int i=0;i<m_aretes.size();i++) // Pour chaque arete
         {
-            if(tableauDesPossibles[a]->getBinaire()->at(i) == 1) // Ajoute ou non l'arete
+            if(tableauDesPossibles[a]->getBinaire().at(i) == '1') // Ajoute ou non l'arete
             {
                 m_aretes[i]->ajouter();
             }
             else m_aretes[i]->retirer();
         }
+
         for(auto s : m_sommets)
         {
-            if(nbDij%10000 == 0) std::cout<< nbDij << " Dijkstra effectues"<<std::endl;
-            tableauDesPossibles[a]->setPoidsDij(tableauDesPossibles[a]->getPoidsDij()+this->algoDijkstra(s.second->getId())); // Effectue la somme des Dijkstra en partant de chaque point
             nbDij++;
+            if(nbDij%100000 == 0) std::cout<< nbDij << " Dijkstra effectues"<<std::endl;
+            tableauDesPossibles[a]->setPoidsDij(tableauDesPossibles[a]->getPoidsDij()+this->algoDijkstra(s.second->getId())); // Effectue la somme des Dijkstra en partant de chaque point
         }
     }
 
@@ -440,6 +445,7 @@ void Graphe::pareto(std::vector<Possibilite*>& tableauDesPossibles)
             pareto.addSommet(i, tableauDesPossibles[i]->getPoids()->at(0), tableauDesPossibles[i]->getPoids()->at(1));
         }
     }
+
     Svgfile SVGPareto("pareto_1.svg");
     pareto.dessinerPareto(SVGPareto);
 }
@@ -451,11 +457,28 @@ std::pair<bool,std::vector<int>*>* Graphe::DFSM() //DFS Marque
     int nbSommetM = 0;
     for(auto s : m_sommets) // Compte les sommet marque
     {
+        bool connexe = false;
+        for(auto a : *s.second->getAretes())
+        {
+            if(a->isAjoute())
+            {
+                connexe = true;
+                break;
+            }
+        }
+        if(!connexe)
+        {
+            std::vector<int>* norep = new std::vector<int>;
+            std::pair<bool,std::vector<int>*>* pairR = new std::pair<bool,std::vector<int>*>;
+            *pairR = std::make_pair(false,norep);
+            return pairR;
+        }
         if(s.second->isAjoute())
         {
             nbSommetM++;
         }
     }
+
     return s0->DFSM(nbSommetM);
 }
 
@@ -474,11 +497,6 @@ bool Graphe::triAretesCroissantes(Arete* a1, Arete* a2)
 /// Algorithme de dijkstra qui part d'un sommet de depart et renvoie la somme des distances a tous les points
 int Graphe::algoDijkstra(int depart)
 {
-    for(auto s : m_sommets) // Trie toutes les aretes dans les sommets par ordre croissant
-    {
-        std::sort(s.second->getAretes()->begin(), s.second->getAretes()->end(),Graphe::triAretesCroissantes);
-    }
-
     auto cmp = [](Sommet* s1, Sommet* s2) // Lambda du comparateur pour la priority queue
     {
         return s1->getD()+s1->getDistancePlusProcheVoisin() > s2->getD()+s2->getDistancePlusProcheVoisin();
@@ -488,21 +506,21 @@ int Graphe::algoDijkstra(int depart)
     std::unordered_map<Sommet*,int> dist;
     std::unordered_set<Sommet*> decouverts;
 
-    for(auto s : m_sommets) // Pour chaque sommet
+    myqueue.push(m_sommets.at(depart)); // Ajoute le sommet de depart a la queue
+    for(auto s : m_sommets)
     {
-         if(s.second == m_sommets.at(depart)) // Si le sommet est celui de depart
-         {
+        if(s.second == m_sommets.at(depart)) // Si le sommet est celui de depart
+        {
              dist.insert({s.second, 0}); // Distance est 0
              s.second->setDistance(0);
-         }
-         else
-         {
+        }
+        else
+        {
              dist.insert({s.second, 100000}); // Distance est inf
              s.second->setDistance(100000);
-         }
+        }
     }
 
-    myqueue.push(m_sommets.at(depart)); // Ajoute le sommet de depart a la queue
     Sommet* s;
 
     while(!myqueue.empty()) // Tant que la queue n'est pas vide

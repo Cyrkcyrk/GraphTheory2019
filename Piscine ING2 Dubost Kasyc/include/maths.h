@@ -2,6 +2,7 @@
 #define MATHS_H
 
 #include <vector>
+#include <string>
 #include "Graphe.h"
 #include "Possibilite.h"
 
@@ -25,7 +26,7 @@ class maths
         static std::vector<Possibilite*> compteur_etat_possibles(int nb_sommet, int nb_arete, Graphe* g);
         static std::vector<Possibilite*> compteur_etat_possiblesPrim(std::vector<char> binaireA,std::vector<char> binaireB, Graphe* g);
 
-        static std::vector<unsigned int> decalage(std::vector<unsigned int> position, int nbADecaler);
+        static std::vector<std::string> decalage(std::string binaire);
         static std::vector<std::vector<char>>* decalageAToB(std::vector<char>& petitBinaire, std::vector<char>& binaire);
 
     protected:

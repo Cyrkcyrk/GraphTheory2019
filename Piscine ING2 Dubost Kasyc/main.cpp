@@ -8,9 +8,9 @@
 
 int main()
 {
-    Graphe g("graphes/broadway.txt","graphes/broadway_weights_0.txt");
+    //Graphe g("graphes/broadway.txt","graphes/broadway_weights_0.txt");
     //Graphe g("graphes/cubetown.txt","graphes/cubetown_weights_0.txt");
-    //Graphe g("graphes/manhattan.txt","graphes/manhattan_weights_1.txt");
+    Graphe g("graphes/manhattan.txt","graphes/manhattan_weights_1.txt");
     //Graphe g("graphes/triville.txt","graphes/triville_weights_0.txt");
 
     {
