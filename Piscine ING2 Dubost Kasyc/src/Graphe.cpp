@@ -19,10 +19,11 @@ Graphe::Graphe()
 
 Graphe::Graphe(std::string nomFichierSommet, std::string nomFichierArete)
 {
+    m_poidsMax.push_back(0);
+    m_poidsMax.push_back(0);
+
     lireSommet(nomFichierSommet);
     lireArete(nomFichierArete);
-    m_poidsMax.push_back(0);
-    m_poidsMax.push_back(0);
 }
 
 Graphe::Graphe(std::vector<Sommet*> sommets, std::vector<Arete*> aretes)
@@ -54,14 +55,19 @@ void Graphe::dessinerGraphe(Svgfile& svgout)
 
     for(auto s : m_sommets)
     {
-        s.second->dessiner(svgout, 1, true);
+        s.second->dessiner(svgout, 1, 1, true);
     }
 }
 
 /// Dessine la frontiere de pareto
-void Graphe::dessinerPareto(Svgfile& svgout)
+void Graphe::dessinerPareto(std::string name)
 {
+    double coefX=100.0/m_poidsMax[0], coefY=100.0/m_poidsMax[1];
+
+    //double coefX=1.0, coefY=1.0;
     std::vector<Sommet*> frontiere;
+
+    Svgfile svgout(name, m_poidsMax[0]+100, m_poidsMax[1]+100);
 
     for(auto s : m_sommets)
     {
@@ -71,13 +77,13 @@ void Graphe::dessinerPareto(Svgfile& svgout)
         }
         else
         {
-            s.second->dessiner(svgout, 1, false, POINT_PARETO_RAYON, POINT_COULEUR, 0.1);
+            s.second->dessiner(svgout, coefX, coefY, false, POINT_PARETO_RAYON, POINT_COULEUR, 0.5);
         }
     }
 
     for(auto s : frontiere)
     {
-        svgout.addCircle(s->getCoord().getX()*5, s->getCoord().getY(), POINT_PARETO_RAYON, POINT_PARETO_COULEUR_OPTIMUM, PARETO_FONT_SIZE);
+        svgout.addCircle(s->getCoord().getX()*coefX, s->getCoord().getY()*coefY, POINT_PARETO_RAYON, POINT_PARETO_COULEUR_OPTIMUM, PARETO_FONT_SIZE);
 
         std::stringstream stream;
         stream << std::fixed << std::setprecision(1)
@@ -85,7 +91,7 @@ void Graphe::dessinerPareto(Svgfile& svgout)
                << " / "
                << s->getCoord().getY();
 
-        svgout.addText(s->getCoord().getX()*5, s->getCoord().getY(), stream.str(), "rgb(50, 50, 50)", PARETO_FONT_SIZE);
+        svgout.addText(s->getCoord().getX()*coefX, s->getCoord().getY()*coefY, stream.str(), "rgb(50, 50, 50)", PARETO_FONT_SIZE);
     }
 }
 
@@ -165,6 +171,14 @@ void Graphe::lireArete(std::string nomFichier)
             tabPoids.push_back(poids);
         }
         m_aretes.find(id)->second->addPoids(tabPoids);
+    }
+    for (auto s : m_sommets)
+    {
+        if (s.second->getCoord().getX() > m_poidsMax[0])
+            m_poidsMax[0] = s.second->getCoord().getX();
+
+        if (s.second->getCoord().getY() > m_poidsMax[1])
+            m_poidsMax[1] = s.second->getCoord().getY();
     }
 }
 
@@ -287,7 +301,6 @@ void Graphe::pareto2(std::vector<Possibilite*>& tableauDesPossibles, bool prim)
         std::cout << "Erreur aucune possibilite reliant tous les sommets"<<std::endl;
         return;
     }
-
     Graphe pareto2;
     std::vector<Possibilite*> newSols; // Determination des solutions avec cycle
     if(!prim)
@@ -314,6 +327,7 @@ void Graphe::pareto2(std::vector<Possibilite*>& tableauDesPossibles, bool prim)
     {
         std::sort(s.second->getAretes()->begin(), s.second->getAretes()->end(),Graphe::triAretesCroissantes);
     }
+
     for(unsigned int a=0;a<tableauDesPossibles.size();a++) // Pour chaque possibilite
     {
         for(unsigned int i=0;i<m_aretes.size();i++) // Pour chaque arete
@@ -328,7 +342,7 @@ void Graphe::pareto2(std::vector<Possibilite*>& tableauDesPossibles, bool prim)
         for(auto s : m_sommets)
         {
             nbDij++;
-            if(nbDij%100000 == 0) std::cout<< nbDij << " Dijkstra effectues"<<std::endl;
+            if(nbDij%10000 == 0) std::cout<< nbDij << " Dijkstra effectues"<<std::endl;
             tableauDesPossibles[a]->setPoidsDij(tableauDesPossibles[a]->getPoidsDij()+this->algoDijkstra(s.second->getId())); // Effectue la somme des Dijkstra en partant de chaque point
         }
     }
@@ -354,16 +368,16 @@ void Graphe::pareto2(std::vector<Possibilite*>& tableauDesPossibles, bool prim)
 
     for(unsigned int i=1;i<tableauDesPossibles.size();i++)// Pour chaque solution
     {
+        bool ajoute = false;
         if(tableauDesPossibles[i]->getPoids()->at(0)<maxY) // Si la solution est meilleure sur l'autre aspect
         {
             if(tableauDesPossibles[i]->getPoids()->at(0) > m_poidsMax[0]) // Tailles du Svgout
             {
-
                 m_poidsMax[0] = tableauDesPossibles[i]->getPoids()->at(0);
             }
-            if(tableauDesPossibles[0]->getPoidsDij() > m_poidsMax[1])
+            if(tableauDesPossibles[i]->getPoidsDij() > m_poidsMax[1])
             {
-                m_poidsMax[0] = tableauDesPossibles[0]->getPoidsDij();
+                m_poidsMax[1] = tableauDesPossibles[i]->getPoidsDij();
             }
             bool memeX = false;
             for(auto x : xOptim) // Et que c'est la plus basse a ce X
@@ -378,19 +392,34 @@ void Graphe::pareto2(std::vector<Possibilite*>& tableauDesPossibles, bool prim)
                 xOptim.push_back(tableauDesPossibles[i]->getPoidsDij());
                 maxY = tableauDesPossibles[i]->getPoids()->at(0);
                 pareto2.addSommet(i, tableauDesPossibles[i]->getPoids()->at(0), tableauDesPossibles[i]->getPoidsDij(),true);
+                ajoute = true;
             }
             else // Ajoute la solution dominee
             {
                 pareto2.addSommet(i, tableauDesPossibles[i]->getPoids()->at(0), tableauDesPossibles[i]->getPoidsDij());
+                ajoute = true;
             }
         }
         else // Ajoute la solution dominee
         {
             pareto2.addSommet(i, tableauDesPossibles[i]->getPoids()->at(0), tableauDesPossibles[i]->getPoidsDij());
+            ajoute = true;
+        }
+
+        if (ajoute && pareto2.getPoidsMax(1) < tableauDesPossibles[i]->getPoids()->at(0))
+        {
+            pareto2.setPoidsMax(0, tableauDesPossibles[i]->getPoids()->at(0));
+        }
+        if (ajoute && pareto2.getPoidsMax(1) < tableauDesPossibles[i]->getPoidsDij())
+        {
+            pareto2.setPoidsMax(1, tableauDesPossibles[i]->getPoidsDij());
         }
     }
-    Svgfile SVGPareto2("pareto_2.svg", 500, 11000); // Affiche le graphe
-    pareto2.dessinerPareto(SVGPareto2);
+    if(prim)
+    {
+        pareto2.dessinerPareto("paretoPrim.svg");
+    }
+    else pareto2.dessinerPareto("pareto_2.svg");
     std::cout<<"Nuage de points et frontiere de Pareto dessines"<<std::endl<<std::endl;
 }
 
@@ -420,13 +449,23 @@ void Graphe::pareto(std::vector<Possibilite*>& tableauDesPossibles)
     pareto.addSommet(0, tableauDesPossibles[0]->getPoids()->at(0), tableauDesPossibles[0]->getPoids()->at(1),true); // Ajoute le sommet au graphe
     for(unsigned int i=1;i<tableauDesPossibles.size();i++) // Pour chaque solution
     {
+        bool ajoute = false;
         if(tableauDesPossibles[i]->getPoids()->at(1)<maxY) // Si la solution est meilleure sur l'autre aspect
         {
+            if(tableauDesPossibles[i]->getPoids()->at(0) > m_poidsMax[0]) // Tailles du Svgout
+            {
+                m_poidsMax[0] = tableauDesPossibles[i]->getPoids()->at(0);
+            }
+            if(tableauDesPossibles[i]->getPoidsDij() > m_poidsMax[1])
+            {
+                m_poidsMax[1] = tableauDesPossibles[i]->getPoids()->at(1);
+            }
             bool memeX = false;
             for(auto x : xOptim)
             {
                 if(x==tableauDesPossibles[i]->getPoids()->at(0)) // Si elle est la plus basse
                 {
+
                     memeX = true;
                 }
             }
@@ -435,20 +474,30 @@ void Graphe::pareto(std::vector<Possibilite*>& tableauDesPossibles)
                 xOptim.push_back(tableauDesPossibles[i]->getPoids()->at(0));
                 maxY = tableauDesPossibles[i]->getPoids()->at(1);
                 pareto.addSommet(i, tableauDesPossibles[i]->getPoids()->at(0), tableauDesPossibles[i]->getPoids()->at(1),true); // Ajoute la solution de pareto
+                ajoute = true;
             }
             else// Ajoute la solution dominee
             {
                 pareto.addSommet(i, tableauDesPossibles[i]->getPoids()->at(0), tableauDesPossibles[i]->getPoids()->at(1));
+                ajoute = true;
             }
         }
         else// Ajoute la solution dominee
         {
             pareto.addSommet(i, tableauDesPossibles[i]->getPoids()->at(0), tableauDesPossibles[i]->getPoids()->at(1));
+            ajoute = true;
+        }
+        if (ajoute && pareto.getPoidsMax(1) < tableauDesPossibles[i]->getPoids()->at(0))
+        {
+            pareto.setPoidsMax(0, tableauDesPossibles[i]->getPoids()->at(0));
+        }
+        if (ajoute && pareto.getPoidsMax(1) < tableauDesPossibles[i]->getPoids()->at(1))
+        {
+            pareto.setPoidsMax(1, tableauDesPossibles[i]->getPoids()->at(0));
         }
     }
 
-    Svgfile SVGPareto("pareto_1.svg");
-    pareto.dessinerPareto(SVGPareto);
+    pareto.dessinerPareto("pareto_1.svg");
     std::cout<<"Nuage de points et frontiere de Pareto dessines"<<std::endl<<std::endl;
 }
 
@@ -484,15 +533,16 @@ int Graphe::algoDijkstra(int depart)
     std::unordered_set<Sommet*> decouverts;
 
     myqueue.push(m_sommets.at(depart)); // Ajoute le sommet de depart a la queue
-    for(auto s : m_sommets)
+
+    for(auto s : m_sommets) // Pour chaque sommet
     {
-        if(s.second == m_sommets.at(depart)) // Si le sommet est celui de depart
-        {
+         if(s.second == m_sommets.at(depart)) // Si le sommet est celui de depart
+         {
              dist.insert({s.second, 0}); // Distance est 0
              s.second->setDistance(0);
-        }
-        else
-        {
+         }
+         else
+         {
              dist.insert({s.second, 100000}); // Distance est inf
              s.second->setDistance(100000);
         }

@@ -162,11 +162,11 @@ Sommet* Sommet::getPlusProcheVoisin()
 }
 
 
-void Sommet::dessiner(Svgfile& svgout, double coef, bool afficher_texte, double rayon, std::string couleur, double opacity)
+void Sommet::dessiner(Svgfile& svgout, double coefX, double coefY, bool afficher_texte, double rayon, std::string couleur, double opacity )
 {
-    svgout.addCircle(m_coord.getX()*coef*5, m_coord.getY()*coef, rayon, couleur, opacity);
+    svgout.addCircle(m_coord.getX()*coefX, m_coord.getY()*coefY, rayon, couleur, opacity);
     if (afficher_texte)
     {
-        svgout.addText(m_coord.getX()*coef*5,m_coord.getY()*coef+rayon/2, std::to_string(m_id), POINT_TEXT, 9, true);
+        svgout.addText(m_coord.getX()*coefX,m_coord.getY()*coefY+rayon/2, std::to_string(m_id), POINT_TEXT, 9, true);
     }
 }

@@ -26,7 +26,8 @@ class Graphe
         void dessinerGraphe(Svgfile& svgout);
 
         /// Dessine la frontiere de pareto
-        void dessinerPareto(Svgfile& svgout);
+
+        void dessinerPareto(std::string name = "pareto.svg");
 
         /// Algorithme de prim pour determiner les arbres couvrants de poids minimal en fonction d'un poids
         Graphe algoPrim(int depart, int critere) const;
@@ -34,6 +35,9 @@ class Graphe
         int getNbrCritere() const {return m_NbrCritere;};
         unsigned int getTaille() const {return m_aretes.size();};
         unsigned int getOrdre() const {return m_sommets.size();};
+
+        void setPoidsMax(int nb, double poids) {this->m_poidsMax[nb] = poids;};
+        double getPoidsMax(int nb) {return m_poidsMax[nb];};
 
         /// Ajoute un sommet a la map des sommets
         void addSommet(int id, double X, double Y, bool optimum = false);
