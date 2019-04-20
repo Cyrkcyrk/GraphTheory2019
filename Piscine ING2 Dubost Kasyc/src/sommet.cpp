@@ -90,17 +90,18 @@ std::pair<bool,std::vector<int>*>* Sommet::DFSM(unsigned int nbSommets)
     poidsChemin->push_back(0);
 
     pile.push(this);
-    Sommet* Ec;
+    Sommet* Ec = nullptr;
     while (!pile.empty())
     {
         Ec = pile.top();
         pile.pop();
         for(Sommet* s : Ec->getVoisins())
         {
-            if(Ec->getArete(s)!=NULL && Ec->getArete(s)->isAjoute() && decouverts.find(s) == decouverts.end())
+            if(decouverts.find(s) == decouverts.end() && Ec->getArete(s)->isAjoute())
             {
-                poidsChemin->at(0) += Ec->getArete(s)->getPoids()[0];
-                poidsChemin->at(1) += Ec->getArete(s)->getPoids()[1];
+                Arete* a = Ec->getArete(s);
+                poidsChemin->at(0) += a->getPoids()[0];
+                poidsChemin->at(1) += a->getPoids()[1];
                 pile.push(s);
             }
         }
@@ -108,16 +109,12 @@ std::pair<bool,std::vector<int>*>* Sommet::DFSM(unsigned int nbSommets)
     }
     if(decouverts.size() == nbSommets)
     {
-        if(poidsChemin->at(0) < 0 )std::cout << poidsChemin->at(0)<< " ";
-        if(poidsChemin->at(1)  < 0 )std::cout << poidsChemin->at(1)<< " ";
         std::pair<bool,std::vector<int>*>* a = new std::pair<bool,std::vector<int>*>;
         *a = std::make_pair(true,poidsChemin);
         return a;
     }
     else
     {
-        if(poidsChemin->at(0) < 0 )std::cout << poidsChemin->at(0)<< " FAUX";
-        if(poidsChemin->at(1) < 0 )std::cout << poidsChemin->at(1)<< " FAUX";
         std::pair<bool,std::vector<int>*>* a = new std::pair<bool,std::vector<int>*>;
         *a = std::make_pair(false,poidsChemin);
         return a;

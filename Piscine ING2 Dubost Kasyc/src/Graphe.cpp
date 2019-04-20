@@ -318,7 +318,7 @@ void Graphe::pareto2(std::vector<Possibilite*>& tableauDesPossibles, bool prim)
     {
         for(unsigned int i=0;i<m_aretes.size();i++) // Pour chaque arete
         {
-            if(tableauDesPossibles[a]->getBinaire().at(i) == '1') // Ajoute ou non l'arete
+            if(tableauDesPossibles[a]->getBinaire()->at(i) == '1') // Ajoute ou non l'arete
             {
                 m_aretes[i]->ajouter();
             }
@@ -391,6 +391,7 @@ void Graphe::pareto2(std::vector<Possibilite*>& tableauDesPossibles, bool prim)
     }
     Svgfile SVGPareto2("pareto_2.svg", 500, 11000); // Affiche le graphe
     pareto2.dessinerPareto(SVGPareto2);
+    std::cout<<"Nuage de points et frontiere de Pareto dessines"<<std::endl<<std::endl;
 }
 
 /// Frontiere de pareto
@@ -448,38 +449,14 @@ void Graphe::pareto(std::vector<Possibilite*>& tableauDesPossibles)
 
     Svgfile SVGPareto("pareto_1.svg");
     pareto.dessinerPareto(SVGPareto);
+    std::cout<<"Nuage de points et frontiere de Pareto dessines"<<std::endl<<std::endl;
 }
 
 /// DFS sur les sommets marques
 std::pair<bool,std::vector<int>*>* Graphe::DFSM() //DFS Marque
 {
     Sommet*s0 = m_sommets[0];
-    int nbSommetM = 0;
-    for(auto s : m_sommets) // Compte les sommet marque
-    {
-        bool connexe = false;
-        for(auto a : *s.second->getAretes())
-        {
-            if(a->isAjoute())
-            {
-                connexe = true;
-                break;
-            }
-        }
-        if(!connexe)
-        {
-            std::vector<int>* norep = new std::vector<int>;
-            std::pair<bool,std::vector<int>*>* pairR = new std::pair<bool,std::vector<int>*>;
-            *pairR = std::make_pair(false,norep);
-            return pairR;
-        }
-        if(s.second->isAjoute())
-        {
-            nbSommetM++;
-        }
-    }
-
-    return s0->DFSM(nbSommetM);
+    return s0->DFSM(m_sommets.size());
 }
 
 /// Ajoute un sommet a la map des sommets
