@@ -277,7 +277,7 @@ std::vector<std::vector<char>>* maths::decalageAToB(std::vector<char>& petitBina
 {
     std::vector<std::vector<char>>* solutions = new std::vector<std::vector<char>>;
     std::vector<std::vector<char>>* solutionsTot = new std::vector<std::vector<char>>;
-    std::vector<char> solution;
+    //std::vector<char> solution;
     unsigned int nbXMax = 0;
     for(unsigned int i = 0;i<binaire.size();i++)
     {

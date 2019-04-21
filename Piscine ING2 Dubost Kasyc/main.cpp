@@ -21,8 +21,9 @@ int main()
         std::cout << "2. Cubetown" << std::endl;
         std::cout << "3. Manhattan" << std::endl;
         std::cout << "4. Triville" << std::endl;
+        std::cout << "5. Autre" << std::endl;
         std::cin >> choixGraphe;
-    }while(choixGraphe < 0 || choixGraphe > 4);
+    }while(choixGraphe < 0 || choixGraphe > 5);
 
     switch(choixGraphe)
     {
@@ -92,7 +93,21 @@ int main()
         }
         break;
 
+    case 5:
+
+        std::string nom;
+        std::string poids;
+
+        std::cout << "Entrez le chemin d'accès du fichier graphe que vous voulez charger ?" << std::endl;
+        std::cin >> nom;
+        g.lireSommet(nom);
+
+        std::cout << "Entrez le chemin d'accès du fichier poids que vous voulez charger ?" << std::endl;
+        std::cin >> poids;
+        g.lireArete(poids);
+        break;
     }
+
     std::cout << "Chargement du graphe effectue" << std::endl;
     {
         Svgfile svgout("Graphe.svg");
