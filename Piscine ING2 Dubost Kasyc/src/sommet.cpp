@@ -62,24 +62,6 @@ std::pair<Arete*, Sommet*> Sommet::getProcheVoisin(int critere)
     return {a1,s1};
 }
 
-std::unordered_set<const Sommet*> Sommet::rechercherCC(std::unordered_set<const Sommet*> cc) const{
-    std::unordered_set<const Sommet*> tempUnSet;
-    if (cc.find(this) == cc.end())
-    {
-        cc.insert(this);
-        for(auto voisin : m_voisins)
-        {
-            tempUnSet = voisin->rechercherCC(cc);
-            for(auto temp : tempUnSet)
-            {
-                cc.insert(temp);
-            }
-        }
-    }
-
-    return cc;
-}
-
 std::pair<bool,std::vector<int>*>* Sommet::DFSM(unsigned int nbSommets)
 {
     std::unordered_set<Sommet*> decouverts;

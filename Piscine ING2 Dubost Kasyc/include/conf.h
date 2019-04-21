@@ -2,6 +2,7 @@
 #define CONF_H_INCLUDED
 
 #include <string>
+/** Fichier de configuration pour affichage **/
 
 const double TRAIT_EPAISSEUR = 2.0;
 const std::string TRAIT_COULEUR = "rgb(150,150,150)";

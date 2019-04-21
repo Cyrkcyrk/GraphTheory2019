@@ -15,6 +15,7 @@ int main()
 
     do
     {
+        std::cout << "L'affichage genere un fichier svg a ouvrir manuellement" << std::endl;
         std::cout << "Quel graphe voulez-vous traiter ?" << std::endl;
         std::cout << "0. Quitter le programme" << std::endl;
         std::cout << "1. Broadway" << std::endl;
@@ -112,7 +113,7 @@ int main()
         do
         {
             std::cout << "Quel traitement voulez-vous effectuer sur le Graphe ?"<<std::endl;
-            std::cout << "0. Quitter le programmer" << std::endl;
+            std::cout << "0. Quitter le programme" << std::endl;
             std::cout << "1. Algorithme de Prim sur les deux criteres" << std::endl;
             std::cout << "2. Determination de la frontiere de Pareto en fonction des deux criteres" << std::endl;
             std::cout << "3. Determination de la frontiere de Pareto en prenant compte des temps de parcours" << std::endl;
@@ -137,6 +138,7 @@ int main()
                 prims[i].dessinerGraphe(svgout);
                 primFait = true;
             }
+            std::cout << "Prim effectue en fonction de chaque critere" << std::endl;
             break;
         case 2:
             if(tableauDesPossibles.size() > 0)
