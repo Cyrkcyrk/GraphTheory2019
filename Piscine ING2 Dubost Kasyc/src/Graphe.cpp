@@ -319,7 +319,7 @@ void Graphe::pareto2(std::vector<Possibilite*>& tableauDesPossibles, bool prim)
         }
     }
 
-    std::cout << "Nombre de possibilite : "<< tableauDesPossibles.size();
+    std::cout << "Nombre de possibilites : "<< tableauDesPossibles.size();
     std::cout << std::endl;
 
     int nbDij = 0;

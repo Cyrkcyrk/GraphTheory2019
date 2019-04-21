@@ -23,15 +23,6 @@ void Arete::addPoids(std::vector<double> tabPoids)
     m_poids = tabPoids;
 }
 
-std::vector<Coord> Arete::getCoord() const
-{
-    std::vector<Coord> retour;
-
-    retour.push_back(this->m_sommet1->getCoord());
-    retour.push_back(this->m_sommet2->getCoord());
-
-    return retour;
-}
 
 //svgout.addLine(tmp[0].getX(), tmp[0].getY(), tmp[1].getX(), tmp[1].getY(), TRAIT_EPAISSEUR, TRAIT_COULEUR);
 

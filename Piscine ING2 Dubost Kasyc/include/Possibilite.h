@@ -3,7 +3,9 @@
 
 #include <vector>
 #include <string>
-
+/** Une possibilite est un nombre binaire representant les aretes selectionnees
+ainsi qu'un vecteur de poids et un poids de Dijkstra (somme des dijkstra sur chaque sommet de cette possibilite
+**/
 class Possibilite
 {
     public:
